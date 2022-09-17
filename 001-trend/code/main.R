@@ -17,6 +17,7 @@ setwd( output.directory );
 
 ##################################################
 require(arrow);
+require(deming);
 require(fda);
 require(ggplot2);
 require(litteR);

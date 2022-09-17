@@ -9,10 +9,11 @@ single.time.series.analysis <- function(x) {
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if( any(is.na(x)) ) {
 
-        output.vector <- rep(x = NA, times = 15);
+        output.vector <- rep(x = NA, times = 12);
 
     } else {
 
+        require(deming);
         require(litteR);
         require(mblm);
         require(trend);
@@ -36,6 +37,9 @@ single.time.series.analysis <- function(x) {
         results.litteR.theil_sen <- litteR::theil_sen(x = DF.temp$year, y = DF.temp$value);
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        results.deming.theilsen <- deming::theilsen(formula = value ~ year, data = DF.temp);
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         results.mblm         <- mblm::mblm(formula = value ~ year, data = DF.temp);
         confint.results.mblm <- confint(results.mblm);
         summary.results.mblm <- summary(results.mblm);
@@ -54,17 +58,24 @@ single.time.series.analysis <- function(x) {
             litteR.slope     = slope(    results.litteR.theil_sen),
             litteR.intercept = intercept(results.litteR.theil_sen),
 
-            mblm.slope        = results.mblm[['coefficients']]['year'],
-            mblm.slope.pv     = summary.results.mblm$coefficients["year","Pr(>|V|)"],
-            mblm.slope.lb     = confint.results.mblm["year","0.025"],
-            mblm.slope.ub     = confint.results.mblm["year","0.975"],
+            deming.slope        = results.deming.theilsen[['coefficients']]['year'],
+            deming.slope.lb     = results.deming.theilsen[['ci']][2,1],
+            deming.slope.ub     = results.deming.theilsen[['ci']][2,2],
+            deming.intercept    = results.deming.theilsen[['coefficients']]['(Intercept)'],
+            deming.intercept.lb = results.deming.theilsen[['ci']][1,1],
+            deming.intercept.ub = results.deming.theilsen[['ci']][1,2]
 
-            mblm.intercept    = results.mblm[['coefficients']]['(Intercept)'],
-            mblm.intercept.pv = summary.results.mblm$coefficients["(Intercept)","Pr(>|V|)"],
-            mblm.intercept.lb = confint.results.mblm["(Intercept)","0.025"],
-            mblm.intercept.ub = confint.results.mblm["(Intercept)","0.975"],
-
-            mblm.R.squared    = mblm.R.squared
+            # mblm.slope        = results.mblm[['coefficients']]['year'],
+            # mblm.slope.pv     = summary.results.mblm$coefficients["year","Pr(>|V|)"],
+            # mblm.slope.lb     = confint.results.mblm["year","0.025"],
+            # mblm.slope.ub     = confint.results.mblm["year","0.975"],
+            #
+            # mblm.intercept    = results.mblm[['coefficients']]['(Intercept)'],
+            # mblm.intercept.pv = summary.results.mblm$coefficients["(Intercept)","Pr(>|V|)"],
+            # mblm.intercept.lb = confint.results.mblm["(Intercept)","0.025"],
+            # mblm.intercept.ub = confint.results.mblm["(Intercept)","0.975"],
+            #
+            # mblm.R.squared    = mblm.R.squared
 
             );
 
@@ -81,17 +92,22 @@ single.time.series.analysis <- function(x) {
         "litteR.slope",
         "litteR.intercept",
 
-        "mblm.slope",
-        "mblm.slope.pv",
-        "mblm.slope.lb",
-        "mblm.slope.ub",
+        "deming.slope",
+        "deming.slope.lb",
+        "deming.slope.ub",
+        "deming.intercept",
+        "deming.intercept.lb",
+        "deming.intercept.ub"
 
-        "mblm.intercept",
-        "mblm.intercept.pv",
-        "mblm.intercept.lb",
-        "mblm.intercept.ub",
-
-        "mblm.R.squared"
+        # "mblm.slope",
+        # "mblm.slope.pv",
+        # "mblm.slope.lb",
+        # "mblm.slope.ub",
+        # "mblm.intercept",
+        # "mblm.intercept.pv",
+        # "mblm.intercept.lb",
+        # "mblm.intercept.ub",
+        # "mblm.R.squared"
 
         );
 
