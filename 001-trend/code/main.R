@@ -24,7 +24,7 @@ require(tidyr);
 
 # source supporting R code
 code.files <- c(
-    "fpcFeatureEngine.R"
+    "getData-greenness.R"
     );
 
 for ( code.file in code.files ) {
@@ -41,31 +41,29 @@ n.cores   <- ifelse(test = is.macOS, yes = 2, no = parallel::detectCores() - 1);
 cat(paste0("\n# n.cores = ",n.cores,"\n"));
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-FILE.green <- file.path(data.directory,"2022-09-14.01","38100149.csv");
+FILE.input <- file.path(data.directory,"2022-09-16.01","FromNickPC_2000_2022_GreennessAverageNDVI.xlsx");
+LIST.input <- getData.greenness(path = FILE.input);
+
+cat("\nstr(LIST.input)\n");
+print( str(LIST.input)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-DF.green <- read.csv(file = FILE.green);
-
-cat("\nstr(DF.green)\n");
-print( str(DF.green)   );
-
-### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-DF.ndvi <- DF.green[DF.green[,'Urban.greenness'] == "Average normalized difference vegetation index (NDVI)",c("REF_DATE","DGUID","VALUE")];
-
-colnames(DF.ndvi) <- tolower(colnames(DF.ndvi));
-colnames(DF.ndvi) <- gsub(
-    x           = colnames(DF.ndvi),
-    pattern     = "ref_date",
-    replacement = "year"
-    );
-colnames(DF.ndvi) <- gsub(
-    x           = colnames(DF.ndvi),
-    pattern     = "value",
-    replacement = "ndvi"
-    );
-
-cat("\nstr(DF.ndvi)\n");
-print( str(DF.ndvi)   );
+# DF.ndvi <- DF.green[DF.green[,'Urban.greenness'] == "Average normalized difference vegetation index (NDVI)",c("REF_DATE","DGUID","VALUE")];
+#
+# colnames(DF.ndvi) <- tolower(colnames(DF.ndvi));
+# colnames(DF.ndvi) <- gsub(
+#     x           = colnames(DF.ndvi),
+#     pattern     = "ref_date",
+#     replacement = "year"
+#     );
+# colnames(DF.ndvi) <- gsub(
+#     x           = colnames(DF.ndvi),
+#     pattern     = "value",
+#     replacement = "ndvi"
+#     );
+#
+# cat("\nstr(DF.ndvi)\n");
+# print( str(DF.ndvi)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
