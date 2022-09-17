@@ -9,14 +9,38 @@ attach.Sens.slopes <- function(
     cat(paste0("\n# ",thisFunctionName,"() starts.\n"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    colnames.pcp <- c('pcpuid','pcname','pruid','pcclass');
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     LIST.output <- list();
     for ( temp.variable in names(list.input) ) {
-
         DF.input <- LIST.input[[temp.variable]];
         rownames(DF.input) <- DF.input[,'pcpuid'];
+        DF.output <- attach.Sens.slopes_get.DF.output(
+            DF.input   = DF.input,
+            CSV.output = paste0("DF-",temp.variable,"-Sens-slopes.csv")
+            );
+        LIST.output[[ temp.variable ]] <- DF.output;
+        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    cat(paste0("\n# ",thisFunctionName,"() exits."));
+    cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
+    return( LIST.output );
+
+    }
+
+##################################################
+attach.Sens.slopes_get.DF.output <- function(
+    DF.input   = NULL,
+    CSV.output = NULL
+    ) {
+
+    if ( file.exists(CSV.output) ) {
+
+        DF.output <- read.csv(file = CSV.output);
+        colnames(DF.output) <- gsub(x = colnames(DF.output), pattern = "^X", replacement = "");
+
+    } else {
+
+        colnames.pcp <- c('pcpuid','pcname','pruid','pcclass');
         DF.output <- as.data.frame(t(apply(
             X      = DF.input[,setdiff(colnames(DF.input),colnames.pcp)],
             MARGIN = 1,
@@ -35,15 +59,10 @@ attach.Sens.slopes <- function(
         colnames.reordered <- c(colnames.reordered,setdiff(colnames(DF.output),colnames.reordered));
         DF.output <- DF.output[,colnames.reordered];
 
-        LIST.output[[ temp.variable ]] <- DF.output;
+        write.csv(file = CSV.output, x = DF.output, row.names = FALSE);
 
         }
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat(paste0("\n# ",thisFunctionName,"() exits."));
-    cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
-    return( LIST.output );
+    return( DF.output );
 
     }
-
-##################################################

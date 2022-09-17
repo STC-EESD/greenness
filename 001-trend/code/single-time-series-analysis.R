@@ -25,8 +25,9 @@ single.time.series.analysis <- function(x) {
             frequency = 1
             );
 
+        years <- seq(2000,2022);
         DF.temp <- data.frame(
-            year  = seq(2000,2022),
+            year  = years - mean(years),
             value = x
             );
 
