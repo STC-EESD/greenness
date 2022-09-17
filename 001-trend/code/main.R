@@ -28,6 +28,7 @@ require(trend);
 
 # source supporting R code
 code.files <- c(
+    "attach-Sens-slopes.R",
     "getData-greenness.R",
     "single-time-series-analysis.R"
     );
@@ -53,28 +54,10 @@ cat("\nstr(LIST.input)\n");
 print( str(LIST.input)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# DF.temp <- LIST.input[['greenness']];
-# rownames(DF.temp) <- DF.temp[,'pcpuid'];
-# temp.series <- as.numeric(DF.temp[1,setdiff(colnames(DF.temp),c('pcpuid','pcname','pruid','pcclass'))]);
-# temp.ts <- stats::ts(data = temp.series, start = c(2000,1), frequency = 1);
-# results.SenSlope <- trend::sens.slope(x = temp.ts);
+LIST.Sens.slopes <- attach.Sens.slopes(list.input = LIST.input);
 
-DF.temp <- LIST.input[['greenness']];
-rownames(DF.temp) <- DF.temp[,'pcpuid'];
-temp.output <- t(apply(
-    X      = DF.temp[,setdiff(colnames(DF.temp),c('pcpuid','pcname','pruid','pcclass'))],
-    MARGIN = 1,
-    FUN    = single.time.series.analysis
-    ));
-
-cat("\nstr(temp.output)\n");
-print( str(temp.output)   );
-
-cat("\ntemp.output[1:10,]\n");
-print( temp.output[1:10,]   );
-
-cat("\nsummary(temp.output)\n");
-print( summary(temp.output)   );
+cat("\nstr(LIST.Sens.slopes)\n");
+print( str(LIST.Sens.slopes)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
