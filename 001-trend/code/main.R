@@ -24,7 +24,8 @@ require(tidyr);
 
 # source supporting R code
 code.files <- c(
-    "getData-greenness.R"
+    "getData-greenness.R",
+    "single-time-series-analysis.R"
     );
 
 for ( code.file in code.files ) {
@@ -48,22 +49,28 @@ cat("\nstr(LIST.input)\n");
 print( str(LIST.input)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# DF.ndvi <- DF.green[DF.green[,'Urban.greenness'] == "Average normalized difference vegetation index (NDVI)",c("REF_DATE","DGUID","VALUE")];
-#
-# colnames(DF.ndvi) <- tolower(colnames(DF.ndvi));
-# colnames(DF.ndvi) <- gsub(
-#     x           = colnames(DF.ndvi),
-#     pattern     = "ref_date",
-#     replacement = "year"
-#     );
-# colnames(DF.ndvi) <- gsub(
-#     x           = colnames(DF.ndvi),
-#     pattern     = "value",
-#     replacement = "ndvi"
-#     );
-#
-# cat("\nstr(DF.ndvi)\n");
-# print( str(DF.ndvi)   );
+# DF.temp <- LIST.input[['greenness']];
+# rownames(DF.temp) <- DF.temp[,'pcpuid'];
+# temp.series <- as.numeric(DF.temp[1,setdiff(colnames(DF.temp),c('pcpuid','pcname','pruid','pcclass'))]);
+# temp.ts <- stats::ts(data = temp.series, start = c(2000,1), frequency = 1);
+# results.SenSlope <- trend::sens.slope(x = temp.ts);
+
+DF.temp <- LIST.input[['greenness']];
+rownames(DF.temp) <- DF.temp[,'pcpuid'];
+temp.output <- t(apply(
+    X      = DF.temp[,setdiff(colnames(DF.temp),c('pcpuid','pcname','pruid','pcclass'))],
+    MARGIN = 1,
+    FUN    = single.time.series.analysis
+    ));
+
+cat("\nstr(temp.output)\n");
+print( str(temp.output)   );
+
+cat("\ntemp.output[1:10,]\n");
+print( temp.output[1:10,]   );
+
+cat("\nsummary(temp.output)\n");
+print( summary(temp.output)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
