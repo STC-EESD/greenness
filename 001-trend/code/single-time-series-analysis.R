@@ -9,10 +9,12 @@ single.time.series.analysis <- function(x) {
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if( any(is.na(x)) ) {
 
-        output.vector <- rep(x = NA, times = 11);
+        output.vector <- rep(x = NA, times = 15);
 
     } else {
 
+        require(litteR);
+        require(mblm);
         require(trend);
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -22,29 +24,75 @@ single.time.series.analysis <- function(x) {
             frequency = 1
             );
 
+        DF.temp <- data.frame(
+            year  = seq(2000,2022),
+            value = x
+            );
+
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-        results.SenSlope <- trend::sens.slope(x = temp.ts);
+        results.trend.sens.slope <- trend::sens.slope(x = temp.ts);
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        results.litteR.theil_sen <- litteR::theil_sen(x = DF.temp$year, y = DF.temp$value);
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        results.mblm         <- mblm::mblm(formula = value ~ year, data = DF.temp);
+        confint.results.mblm <- confint(results.mblm);
+        summary.results.mblm <- summary(results.mblm);
+        mblm.R.squared       <- 1 - sum(results.mblm$residuals^2) / sum((x - mean(x))^2)
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         output.vector <- c(
-            Sen.slope   = results.SenSlope[['estimates']],
-            z.stat      = results.SenSlope[['statistic']],
-            p.value     = results.SenSlope[['p.value'  ]],
-            conf.level  = attr(x = results.SenSlope[['conf.int']], which = "conf.level"),
-            conf.int.lb = results.SenSlope[['conf.int']][1],
-            conf.int.ub = results.SenSlope[['conf.int']][2]
+
+            trend.slope    = results.trend.sens.slope[['estimates']],
+            trend.slope.pv = results.trend.sens.slope[['p.value'  ]],
+            trend.slope.lb = results.trend.sens.slope[['conf.int']][1],
+            trend.slope.ub = results.trend.sens.slope[['conf.int']][2],
+            # trend.zstat  = results.trend.sens.slope[['statistic']],
+            # conf.level   = attr(x = results.trend.sens.slope[['conf.int']], which = "conf.level"),
+
+            litteR.slope     = slope(    results.litteR.theil_sen),
+            litteR.intercept = intercept(results.litteR.theil_sen),
+
+            mblm.slope        = results.mblm[['coefficients']]['year'],
+            mblm.slope.pv     = summary.results.mblm$coefficients["year","Pr(>|V|)"],
+            mblm.slope.lb     = confint.results.mblm["year","0.025"],
+            mblm.slope.ub     = confint.results.mblm["year","0.975"],
+
+            mblm.intercept    = results.mblm[['coefficients']]['(Intercept)'],
+            mblm.intercept.pv = summary.results.mblm$coefficients["(Intercept)","Pr(>|V|)"],
+            mblm.intercept.lb = confint.results.mblm["(Intercept)","0.025"],
+            mblm.intercept.ub = confint.results.mblm["(Intercept)","0.975"],
+
+            mblm.R.squared    = mblm.R.squared
+
             );
 
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     attr(x = output.vector, which = "names") <- c(
-        "Sen.slope",
-        "z.stat",
-        "p.value",
-        "conf.level",
-        "conf.int.lb",
-        "conf.int.ub"
+
+        "trend.slope",
+        "trend.slope.pv",
+        "trend.slope.lb",
+        "trend.slope.ub",
+
+        "litteR.slope",
+        "litteR.intercept",
+
+        "mblm.slope",
+        "mblm.slope.pv",
+        "mblm.slope.lb",
+        "mblm.slope.ub",
+
+        "mblm.intercept",
+        "mblm.intercept.pv",
+        "mblm.intercept.lb",
+        "mblm.intercept.ub",
+
+        "mblm.R.squared"
+
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###

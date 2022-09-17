@@ -19,8 +19,11 @@ setwd( output.directory );
 require(arrow);
 require(fda);
 require(ggplot2);
+require(litteR);
+require(mblm);
 require(stringr);
 require(tidyr);
+require(trend);
 
 # source supporting R code
 code.files <- c(
