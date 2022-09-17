@@ -14,11 +14,18 @@ getData.greenness <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( all(file.exists(CSV.greenness),file.exists(CSV.ndvi)) ) {
         cat("\n");
-        cat(paste0("The files ",CSV.greenness," and ",CSV.ndvi," already exist; do nothing."));
+        cat(paste0("The files ",CSV.greenness," and ",CSV.ndvi," already exist; loading data ..."));
         cat("\n");
+        DF.greenness <- read.csv(file = CSV.greenness);
+        DF.greenness <- DF.ndvi[,setdiff(colnames(DF.greenness),"X")];
+        colnames(DF.greenness) <- gsub(x = colnames(DF.greenness), pattern = "^X", replacement = "");
+        DF.ndvi <- read.csv(file = CSV.ndvi);
+        DF.ndvi <- DF.ndvi[,setdiff(colnames(DF.ndvi),"X")];
+        colnames(DF.ndvi) <- gsub(x = colnames(DF.ndvi), pattern = "^X", replacement = "");
+        LIST.output <- list(greenness = DF.greenness, ndvi = DF.ndvi);
         cat(paste0("\n# ",thisFunctionName,"() exits."));
         cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
-        return( NULL );
+        return( LIST.output );
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -46,8 +53,8 @@ getData.greenness <- function(
     print( str(DF.ndvi)   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    write.csv(file = CSV.greenness, x = DF.greenness);
-    write.csv(file = CSV.ndvi,      x = DF.ndvi     );
+    write.csv(file = CSV.greenness, x = DF.greenness, row.names = FALSE);
+    write.csv(file = CSV.ndvi,      x = DF.ndvi     , row.names = FALSE);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     LIST.output <- list(
