@@ -65,6 +65,24 @@ visualize.Sens.slopes_variable <- function(
         y.label  = "log10(trend.slope.pv)"
         );
 
+    visualize.Sens.slopes_scatter.plot(
+        variable = variable,
+        DF.input = DF.input,
+        x.var    = "litteR.R.squared",
+        y.var    = "trend.slope.pv",
+        y.log    = TRUE,
+        y.label  = "log10(trend.slope.pv)"
+        );
+
+    visualize.Sens.slopes_scatter.plot(
+        variable = variable,
+        DF.input = DF.input,
+        x.var    = "litteR.sum.sqs",
+        y.var    = "trend.slope.pv",
+        y.log    = TRUE,
+        y.label  = "log10(trend.slope.pv)"
+        );
+
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( !is.null(pcpuids.to.plot) ) {
 
