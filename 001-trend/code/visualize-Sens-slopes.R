@@ -62,6 +62,167 @@ visualize.Sens.slopes_variable <- function(
         y.label  = "log10(trend.slope.pv)"
         );
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    colnames.years <- grep(
+        x       = colnames(DF.input),
+        pattern = "^20",
+        value   = TRUE
+        );
+
+    if ( variable == "greenness" ) {
+        y.limits <- c(0,100);
+    } else {
+        y.limits <- c(0,1);
+        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    pcpuids <- c(100204);
+    for ( temp.pcpuid in pcpuids ) {
+        visualize.Sens.slopes_time.plot(
+            variable       = variable,
+            DF.input       = DF.input,
+            pcpuid         = temp.pcpuid,
+            colnames.years = colnames.years,
+            y.limits       = y.limits,
+            );
+        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    return( NULL );
+
+    }
+
+visualize.Sens.slopes_time.plot <- function(
+    variable       = NULL,
+    DF.input       = NULL,
+    pcpuid         = NULL,
+    colnames.years = NULL,
+    y.limits       = NULL,
+    dots.per.inch  = 300
+    ) {
+
+    output.directory <- variable;
+    if (!dir.exists(output.directory)) {
+        dir.create(path = output.directory, recursive = TRUE);
+        }
+
+    DF.temp <- data.frame(
+        year  = as.numeric(colnames.years),
+        value = as.numeric(DF.input[DF.input[,'pcpuid'] == pcpuid,colnames.years])
+        );
+
+    temp.title <- paste0(
+        pcpuid,', ',
+        DF.input[DF.input[,'pcpuid'] == pcpuid,'pcname'],', ',
+        "pruid = ",DF.input[DF.input[,'pcpuid'] == pcpuid,'pruid']
+        );
+
+    temp.slope    <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.slope'    ], digits = 3);
+    temp.slope.lb <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.lb'  ], digits = 3);
+    temp.slope.ub <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.ub'  ], digits = 3);
+    temp.slope.pv <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.pv'  ], digits = 3);
+    temp.R2       <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.R.squared'], digits = 5);
+
+    temp.subtitle <- paste0(
+        "Sen's slope = ",  temp.slope,", ",
+        "CI(slope) = (", temp.slope.lb,", ",temp.slope.ub,"), ",
+        "pvalue(slope) = ",temp.slope.pv,", ",
+        "R2 = ",           temp.R2
+        );
+
+    my.ggplot <- initializePlot(
+        title    = temp.title,
+        subtitle = temp.subtitle,
+        y.label  = variable
+        );
+
+    my.ggplot <- my.ggplot + ggplot2::theme(
+        title         = ggplot2::element_text(size = 20, face = "bold"),
+        plot.subtitle = ggplot2::element_text(size = 15, face = "bold")
+        );
+
+    my.ggplot <- my.ggplot + ggplot2::geom_line(
+        data    = DF.temp,
+        mapping = ggplot2::aes(x = year, y = value)
+        );
+
+    my.ggplot <- my.ggplot + ggplot2::geom_point(
+        data    = DF.temp,
+        mapping = ggplot2::aes(x = year, y = value)
+        );
+
+    x.min <- min(DF.temp[,'year']);
+    x.max <- max(DF.temp[,'year']);
+    my.ggplot <- my.ggplot + ggplot2::scale_x_continuous(
+        limits =   c(x.min,x.max),
+        breaks = seq(x.min,x.max,2)
+        );
+
+    # my.ggplot <- my.ggplot + ggplot2::scale_y_continuous(
+    #     limits = y.limits
+    #     # breaks = x.breaks
+    #     );
+
+    temp.slope.lb     <- DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.lb'];
+    temp.slope.ub     <- DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.ub'];
+    temp.intercept.lb <- DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.intercept'] - temp.slope.lb * mean(DF.temp[,'year']);
+    temp.intercept.ub <- DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.intercept'] - temp.slope.ub * mean(DF.temp[,'year']);
+
+    DF.temp[,'ymin'] <- temp.intercept.lb + temp.slope.lb * DF.temp[,'year'];
+    DF.temp[,'ymax'] <- temp.intercept.ub + temp.slope.ub * DF.temp[,'year'];
+
+    my.ggplot <- my.ggplot + geom_ribbon(
+        data    = DF.temp,
+        mapping = aes(x = year, ymin = ymin, ymax = ymax),
+        fill    = "red",
+        alpha   = 0.1
+        );
+
+    temp.slope     <- DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.slope'];
+    temp.intercept <- DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.intercept'] - temp.slope * mean(DF.temp[,'year']);
+    my.ggplot <- my.ggplot + geom_abline(
+        slope     = temp.slope,
+        intercept = temp.intercept,
+        colour    = "red"
+        );
+
+    # temp.slope     <- DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.lb'];
+    # temp.intercept <- DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.intercept'] - temp.slope * mean(DF.temp[,'year']);
+    #
+    # my.ggplot <- my.ggplot + geom_abline(
+    #     slope     = temp.slope,
+    #     intercept = temp.intercept,
+    #     colour    = "red",
+    #     linetype  = 2
+    #     );
+    #
+    # temp.slope     <- DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.ub'];
+    # temp.intercept <- DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.intercept'] - temp.slope * mean(DF.temp[,'year']);
+    #
+    # my.ggplot <- my.ggplot + geom_abline(
+    #     slope     = temp.slope,
+    #     intercept = temp.intercept,
+    #     colour    = "red",
+    #     linetype  = 2
+    #     );
+
+    PNG.output <- file.path(
+        output.directory,
+        paste0("plot-",variable,"-",pcpuid,".png")
+        );
+
+    ggplot2::ggsave(
+        filename = PNG.output,
+        plot     = my.ggplot,
+        # scale  = 1,
+        width    = 16,
+        height   =  4,
+        units    = "in",
+        dpi      = dots.per.inch
+        );
+
+    return( NULL );
+
     }
 
 visualize.Sens.slopes_scatter.plot <- function(
@@ -99,6 +260,7 @@ visualize.Sens.slopes_scatter.plot <- function(
     if ( y.log ) { DF.temp[,'y.var'] <- log10(DF.temp[,'y.var']); }
 
     my.ggplot <- initializePlot(
+        title    = NULL,
         subtitle = variable,
         x.label  = x.label,
         y.label  = y.label
