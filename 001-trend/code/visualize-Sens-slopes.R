@@ -79,14 +79,16 @@ visualize.Sens.slopes_variable <- function(
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    for ( temp.pcpuid in pcpuids.to.plot ) {
-        visualize.Sens.slopes_time.plot(
-            variable       = variable,
-            DF.input       = DF.input,
-            pcpuid         = temp.pcpuid,
-            colnames.years = colnames.years,
-            y.limits       = y.limits,
-            );
+    if ( !is.null(pcpuids.to.plot) ) {
+        for ( temp.pcpuid in pcpuids.to.plot ) {
+            visualize.Sens.slopes_time.plot(
+                variable       = variable,
+                DF.input       = DF.input,
+                pcpuid         = temp.pcpuid,
+                colnames.years = colnames.years,
+                y.limits       = y.limits,
+                );
+            }
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
