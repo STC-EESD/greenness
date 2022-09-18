@@ -54,20 +54,20 @@ cat("\nstr(LIST.input)\n");
 print( str(LIST.input)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+LIST.Sens.slopes <- attach.Sens.slopes(list.input = LIST.input);
+
+cat("\nstr(LIST.Sens.slopes)\n");
+print( str(LIST.Sens.slopes)   );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 row.index = 993;
 test_single.time.series.analysis(
     DF.input  = LIST.input[['ndvi']],
     row.index = row.index
     );
 
-cat("\nLIST.input[['ndvi']][row.index,]\n");
-print( LIST.input[['ndvi']][row.index,]   );
-
-### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-LIST.Sens.slopes <- attach.Sens.slopes(list.input = LIST.input);
-
-cat("\nstr(LIST.Sens.slopes)\n");
-print( str(LIST.Sens.slopes)   );
+cat("\nLIST.Sens.slopes[['ndvi']][row.index,]\n");
+print( LIST.Sens.slopes[['ndvi']][row.index,]   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
