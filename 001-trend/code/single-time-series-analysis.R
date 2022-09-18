@@ -137,3 +137,33 @@ single.time.series.analysis <- function(x) {
     return( output.vector );
 
     }
+
+##################################################
+test_single.time.series.analysis <- function(
+    DF.input  = NULL,
+    row.index = 1
+    ) {
+    thisFunctionName <- "test_single.time.series.analysis";
+    cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###");
+    cat(paste0("\n# ",thisFunctionName,"() starts.\n"));
+    years <- seq(2000,2022);
+    DF.temp <- data.frame(year = years, value = as.numeric(DF.input[row.index,as.character(years)]));
+    DF.temp[,'years.centred'] <- DF.temp[,'year'] - mean(DF.temp[,'year']);
+    DF.temp[,'avg.value'    ] <- mean(DF.temp[,'value']);
+    Sens.slope <- single.time.series.analysis(x = DF.temp[,'value']);
+    DF.temp[,'fitted' ]  <- Sens.slope[["litteR.intercept"]] + Sens.slope[["litteR.slope"]] * DF.temp[,'years.centred'];
+    DF.temp[,'residual'] <- DF.temp[,'fitted'] - DF.temp[,'value'];
+    R.squared <- 1 - sum(DF.temp[,'residual']^2) / sum((DF.temp[,'value'] - DF.temp[,'avg.value'])^2);
+    cat("\nDF.temp\n");
+    print( DF.temp   );
+    cat("\nSens.slope[['litteR.slope']]\n");
+    print( Sens.slope[['litteR.slope']]   );
+    cat("\nSens.slope[['litteR.intercept']]\n");
+    print( Sens.slope[['litteR.intercept']]   );
+    cat("\nR.squared\n");
+    print( R.squared   );
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    cat(paste0("\n# ",thisFunctionName,"() exits."));
+    cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
+    return( NULL );
+    }

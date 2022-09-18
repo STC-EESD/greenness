@@ -54,19 +54,20 @@ cat("\nstr(LIST.input)\n");
 print( str(LIST.input)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-DF.ndvi <- LIST.input[['ndvi']];
-years <- seq(2000,2022);
-DF.temp <- data.frame(year = years, ndvi = as.numeric(DF.ndvi[1,as.character(years)]));
-DF.temp[,'avg.ndvi'] <- mean(DF.temp[,'ndvi']);
-Sens.slope <- single.time.series.analysis(x = DF.temp[,'ndvi']);
-DF.temp[,'fitted']   <- Sens.slope[["litteR.intercept"]] + Sens.slope[["litteR.slope"]] * (DF.temp[,'year'] - mean(DF.temp[,'year']));
-DF.temp[,'residual'] <- DF.temp[,'fitted'] - DF.temp[,'ndvi']
+row.index = 993;
+test_single.time.series.analysis(
+    DF.input  = LIST.input[['ndvi']],
+    row.index = row.index
+    );
+
+cat("\nLIST.input[['ndvi']][row.index,]\n");
+print( LIST.input[['ndvi']][row.index,]   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# LIST.Sens.slopes <- attach.Sens.slopes(list.input = LIST.input);
-#
-# cat("\nstr(LIST.Sens.slopes)\n");
-# print( str(LIST.Sens.slopes)   );
+LIST.Sens.slopes <- attach.Sens.slopes(list.input = LIST.input);
+
+cat("\nstr(LIST.Sens.slopes)\n");
+print( str(LIST.Sens.slopes)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
