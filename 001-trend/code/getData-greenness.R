@@ -16,12 +16,15 @@ getData.greenness <- function(
         cat("\n");
         cat(paste0("The files ",CSV.greenness," and ",CSV.ndvi," already exist; loading data ..."));
         cat("\n");
+
         DF.greenness <- read.csv(file = CSV.greenness);
-        DF.greenness <- DF.ndvi[,setdiff(colnames(DF.greenness),"X")];
+        DF.greenness <- DF.greenness[,setdiff(colnames(DF.greenness),"X")];
         colnames(DF.greenness) <- gsub(x = colnames(DF.greenness), pattern = "^X", replacement = "");
+
         DF.ndvi <- read.csv(file = CSV.ndvi);
         DF.ndvi <- DF.ndvi[,setdiff(colnames(DF.ndvi),"X")];
         colnames(DF.ndvi) <- gsub(x = colnames(DF.ndvi), pattern = "^X", replacement = "");
+
         LIST.output <- list(greenness = DF.greenness, ndvi = DF.ndvi);
         cat(paste0("\n# ",thisFunctionName,"() exits."));
         cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
