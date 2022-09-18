@@ -291,10 +291,12 @@ visualize.Sens.slopes_scatter.plot <- function(
     if ( y.log ) { DF.temp[,'y.var'] <- log10(DF.temp[,'y.var']); }
 
     my.ggplot <- initializePlot(
-        title    = NULL,
-        subtitle = variable,
-        x.label  = x.label,
-        y.label  = y.label
+        textsize.title = 45,
+        textsize.axis  = 40,
+        title          = NULL,
+        subtitle       = variable,
+        x.label        = x.label,
+        y.label        = y.label
         );
 
     my.ggplot <- my.ggplot + ggplot2::geom_point(
