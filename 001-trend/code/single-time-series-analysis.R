@@ -69,8 +69,8 @@ single.time.series.analysis <- function(x) {
 
             litteR.slope     = litteR.slope,
             litteR.intercept = litteR.intercept,
-            litteR.R.squared = litteR.R.squared,
             litteR.sum.sqs   = litteR.sum.sqs,
+            litteR.R.squared = litteR.R.squared,
 
             trend.slope    = results.trend.sens.slope[['estimates']],
             trend.slope.pv = results.trend.sens.slope[['p.value'  ]],
@@ -110,8 +110,8 @@ single.time.series.analysis <- function(x) {
 
         "litteR.slope",
         "litteR.intercept",
-        "litteR.R.squared",
         "litteR.sum.sqs",
+        "litteR.R.squared",
 
         "trend.slope",
         "trend.slope.pv",
