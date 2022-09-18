@@ -30,7 +30,9 @@ require(trend);
 code.files <- c(
     "attach-Sens-slopes.R",
     "getData-greenness.R",
-    "single-time-series-analysis.R"
+    "initializePlot.R",
+    "single-time-series-analysis.R",
+    "visualize-Sens-slopes.R"
     );
 
 for ( code.file in code.files ) {
@@ -60,14 +62,19 @@ cat("\nstr(LIST.Sens.slopes)\n");
 print( str(LIST.Sens.slopes)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-row.index = 993;
-test_single.time.series.analysis(
-    DF.input  = LIST.input[['ndvi']],
-    row.index = row.index
+visualize.Sens.slopes(
+    list.input = LIST.Sens.slopes
     );
 
-cat("\nLIST.Sens.slopes[['ndvi']][row.index,]\n");
-print( LIST.Sens.slopes[['ndvi']][row.index,]   );
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+# row.index = 993;
+# test_single.time.series.analysis(
+#     DF.input  = LIST.input[['ndvi']],
+#     row.index = row.index
+#     );
+#
+# cat("\nLIST.Sens.slopes[['ndvi']][row.index,]\n");
+# print( LIST.Sens.slopes[['ndvi']][row.index,]   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
