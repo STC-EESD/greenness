@@ -30,10 +30,36 @@ visualize.Sens.slopes_variable <- function(
     ) {
 
     visualize.Sens.slopes_scatter.plot(
+        variable  = variable,
+        DF.input  = DF.input,
+        diag.line = TRUE,
+        x.var     = "sum.sqs.0",
+        y.var     = "litteR.sum.sqs"
+        );
+
+    visualize.Sens.slopes_scatter.plot(
+        variable = variable,
+        DF.input = DF.input,
+        x.var    = "sum.sqs.0",
+        y.var    = "litteR.R.squared"
+        );
+
+    visualize.Sens.slopes_scatter.plot(
         variable = variable,
         DF.input = DF.input,
         x.var    = "litteR.slope",
-        y.var    = "litteR.R.squared"
+        y.var    = "litteR.R.squared",
+        x.max    = ifelse( variable == "ndvi", 0.01, 3 )
+        );
+
+    visualize.Sens.slopes_scatter.plot(
+        variable = variable,
+        DF.input = DF.input,
+        x.var    = "litteR.slope",
+        x.max    = ifelse( variable == "ndvi", 0.01, 3 ),
+        y.var    = "trend.slope.pv",
+        y.log    = TRUE,
+        y.label  = "log10(trend.slope.pv)"
         );
 
     }
@@ -41,32 +67,75 @@ visualize.Sens.slopes_variable <- function(
 visualize.Sens.slopes_scatter.plot <- function(
     variable      = NULL,
     DF.input      = NULL,
+
+    diag.line     = FALSE,
+
     x.var         = NULL,
-    y.var         = NULL,
     x.label       = x.var,
+    x.log         = FALSE,
+    x.max         = NULL,
+    x.min         = -x.max,
+    x.breaks      = NULL,
+
+    y.var         = NULL,
     y.label       = y.var,
+    y.log         = FALSE,
+    y.max         = NULL,
+    y.min         = -y.max,
+    y.breaks      = NULL,
+
     dots.per.inch = 300
     ) {
 
-    output.director <- variable;
-    if (!dir.exists(output.directory)) {
-        dir.create(path = output.directory, recursive = TRUE);
-        }
-
-    # my.ggplot <- initializePlot(
-    #     # subtitle = paste0("pointID = ",pointID,", (x,y) = (",x.coord,",",y.coord,"), TestZ = ",TestZ)
-    #     );
+    # output.directory <- variable;
+    # if (!dir.exists(output.directory)) {
+    #     dir.create(path = output.directory, recursive = TRUE);
+    #     }
 
     DF.temp <- DF.input[,c(x.var,y.var)];
     colnames(DF.temp) <- c("x.var","y.var");
 
-    my.ggplot <- initializePlot();
-    my.ggolot <- my.ggplot + ggplot2::xlab(label = x.label);
-    my.ggolot <- my.ggplot + ggplot2::ylab(label = y.label);
+    if ( x.log ) { DF.temp[,'x.var'] <- log10(DF.temp[,'x.var']); }
+    if ( y.log ) { DF.temp[,'y.var'] <- log10(DF.temp[,'y.var']); }
+
+    my.ggplot <- initializePlot(
+        subtitle = variable,
+        x.label  = x.label,
+        y.label  = y.label
+        );
+
     my.ggplot <- my.ggplot + ggplot2::geom_point(
         data    = DF.temp,
         mapping = ggplot2::aes(x = x.var, y = y.var)
         );
+    #my.ggplot <- my.ggplot + ggplot2::labs(x = x.label, y = y.label);
+
+    if ( diag.line ) {
+        my.ggplot <- my.ggplot + geom_abline(
+            slope     = 1,
+            intercept = 0,
+            colour    = "gray"
+            );
+        }
+
+    if ( !is.null(x.max) ) {
+        my.ggplot <- my.ggplot + ggplot2::scale_x_continuous(
+            limits = c(x.min,x.max)
+            # breaks = x.breaks
+            );
+        }
+
+    if ( !is.null(y.max) ) {
+        my.ggplot <- my.ggplot + ggplot2::scale_y_continuous(
+            limits = c(y.min,y.max)
+            # breaks = x.breaks
+            );
+        }
+
+    # my.ggplot <- my.ggplot + ggplot2::scale_y_continuous(
+    #     limits = y.limits,
+    #     breaks = y.breaks
+    #     );
 
     # my.ggplot <- my.ggplot + ggplot2::theme(
     #     legend.position = "none",
@@ -79,16 +148,6 @@ visualize.Sens.slopes_scatter.plot <- function(
     # is.selected <- rep(c(TRUE,FALSE), times = ceiling((1+length(my.years))/2));
     # my.years <- my.years[is.selected[1:length(my.years)]];
     # my.breaks = as.Date(paste0(my.years,"-01-01"));
-    #
-    # my.ggplot <- my.ggplot + ggplot2::scale_x_continuous(
-    #     breaks = my.breaks,
-    #     labels = my.breaks
-    #     );
-    #
-    # my.ggplot <- my.ggplot + ggplot2::scale_y_continuous(
-    #     limits = 175 * c(  -1,1),
-    #     breaks =  50 * seq(-4,4)
-    #     );
     #
     # my.ggplot <- my.ggplot + ggplot2::geom_hline(
     #     yintercept = 0,
@@ -109,7 +168,7 @@ visualize.Sens.slopes_scatter.plot <- function(
     # my.ggplot <- my.ggplot + tidyquant::geom_ma(ma_fun = SMA, n = 365, color = "red");
 
     PNG.output <- file.path(
-        output.directory,
+        # output.directory,
         paste0(
             "plot-",variable,"-",
             gsub(x = x.var, pattern = "\\.", replacement = "-"),
@@ -123,7 +182,7 @@ visualize.Sens.slopes_scatter.plot <- function(
         filename = PNG.output,
         plot     = my.ggplot,
         # scale  = 1,
-        width    = 12,
+        width    = 16,
         height   = 12,
         units    = "in",
         dpi      = dots.per.inch

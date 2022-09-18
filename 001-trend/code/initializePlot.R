@@ -4,6 +4,8 @@ initializePlot <- function(
     textsize.axis  = 20,
     title          = '',
     subtitle       = '',
+    x.label        = '',
+    y.label        = '',
     my.palette     = NULL # base::c("#000000","#E69F00","#56B4E9","#009E73","#F0E442","red","#D55E00","#CC79A7")
     ) {
 
@@ -25,7 +27,9 @@ initializePlot <- function(
 
     my.ggplot <- my.ggplot + ggplot2::labs(
         title    = title,
-        subtitle = subtitle
+        subtitle = subtitle,
+        x        = x.label,
+        y        = y.label
         );
 
     if ( !is.null(my.palette) ) {

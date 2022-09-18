@@ -106,7 +106,7 @@ single.time.series.analysis <- function(x) {
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     attr(x = output.vector, which = "names") <- c(
 
-        "sum.sq.0",
+        "sum.sqs.0",
 
         "litteR.slope",
         "litteR.intercept",
