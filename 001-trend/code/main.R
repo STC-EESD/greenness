@@ -30,6 +30,7 @@ require(trend);
 code.files <- c(
     "attach-Sens-slopes.R",
     "getData-greenness.R",
+    "get-pcpuids-to-plot.R",
     "initializePlot.R",
     "single-time-series-analysis.R",
     "visualize-Sens-slopes.R"
@@ -62,8 +63,17 @@ cat("\nstr(LIST.Sens.slopes)\n");
 print( str(LIST.Sens.slopes)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-pcpuids.to.plot <- c(100204);
+pcpuids.to.plot <- get.pcpuids.to.plot(
+    list.Sens.slopes = LIST.Sens.slopes
+    );
 
+cat("\nlength(pcpuids.to.plot)\n");
+print( length(pcpuids.to.plot)   );
+
+cat("\npcpuids.to.plot\n");
+print( pcpuids.to.plot   );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 visualize.Sens.slopes(
     list.input      = LIST.Sens.slopes,
     pcpuids.to.plot = pcpuids.to.plot
