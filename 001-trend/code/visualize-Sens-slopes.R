@@ -66,20 +66,20 @@ visualize.Sens.slopes_variable <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    colnames.years <- grep(
-        x       = colnames(DF.input),
-        pattern = "^20",
-        value   = TRUE
-        );
-
-    if ( variable == "greenness" ) {
-        y.limits <- c(0,100);
-    } else {
-        y.limits <- c(0,1);
-        }
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( !is.null(pcpuids.to.plot) ) {
+
+        colnames.years <- grep(
+            x       = colnames(DF.input),
+            pattern = "^20",
+            value   = TRUE
+            );
+
+        if ( variable == "greenness" ) {
+            y.limits <- c(0,100);
+        } else {
+            y.limits <- c(0,1);
+            }
+
         for ( temp.pcpuid in pcpuids.to.plot ) {
             visualize.Sens.slopes_time.plot(
                 variable       = variable,
