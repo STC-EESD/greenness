@@ -128,12 +128,12 @@ visualize.Sens.slopes_time.plot <- function(
     temp.sum.sqs.0 <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'sum.sqs.0'       ], digits = 3);
 
     temp.subtitle <- paste0(
-        "Sen's slope = ",  temp.slope,", ",
-        "CI(slope) = (",   temp.slope.lb,", ",temp.slope.ub,"), ",
-        "pvalue(slope) = ",temp.slope.pv,", ",
-        "R2 = ",           temp.R2,", ",
-        "sum.sqs = ",      temp.sum.sqs,", ",
-        "sum.sqs.0 = ",    temp.sum.sqs.0
+        "Sen's slope = ",temp.slope,", ",
+        "CI(slope) = (", temp.slope.lb,", ",temp.slope.ub,"), ",
+        "pva(slope) = ", temp.slope.pv,", ",
+        "R2 = ",         temp.R2,", ",
+        "sum.sqs = ",    temp.sum.sqs,", ",
+        "sum.sqs.0 = ",  temp.sum.sqs.0
         );
 
     my.ggplot <- initializePlot(
