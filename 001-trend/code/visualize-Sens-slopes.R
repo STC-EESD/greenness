@@ -1,6 +1,7 @@
 
 visualize.Sens.slopes <- function(
-    list.input = NULL
+    list.input      = NULL,
+    pcpuids.to.plot = NULL
     ) {
 
     thisFunctionName <- "visualize.Sens.slopes";
@@ -11,8 +12,9 @@ visualize.Sens.slopes <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     for ( temp.variable in names(list.input) ) {
         visualize.Sens.slopes_variable(
-            variable = temp.variable,
-            DF.input = list.input[[temp.variable]]
+            variable        = temp.variable,
+            DF.input        = list.input[[temp.variable]],
+            pcpuids.to.plot = pcpuids.to.plot
             );
         }
 
@@ -25,8 +27,9 @@ visualize.Sens.slopes <- function(
 
 ##################################################
 visualize.Sens.slopes_variable <- function(
-    variable = NULL,
-    DF.input = NULL
+    variable        = NULL,
+    DF.input        = NULL,
+    pcpuids.to.plot = NULL
     ) {
 
     visualize.Sens.slopes_scatter.plot(
@@ -76,8 +79,7 @@ visualize.Sens.slopes_variable <- function(
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    pcpuids <- c(100204);
-    for ( temp.pcpuid in pcpuids ) {
+    for ( temp.pcpuid in pcpuids.to.plot ) {
         visualize.Sens.slopes_time.plot(
             variable       = variable,
             DF.input       = DF.input,
