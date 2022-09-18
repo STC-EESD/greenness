@@ -117,17 +117,21 @@ visualize.Sens.slopes_time.plot <- function(
         "pruid = ",DF.input[DF.input[,'pcpuid'] == pcpuid,'pruid']
         );
 
-    temp.slope    <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.slope'    ], digits = 3);
-    temp.slope.lb <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.lb'  ], digits = 3);
-    temp.slope.ub <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.ub'  ], digits = 3);
-    temp.slope.pv <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.pv'  ], digits = 3);
-    temp.R2       <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.R.squared'], digits = 5);
+    temp.slope     <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.slope'    ], digits = 3);
+    temp.slope.lb  <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.lb'  ], digits = 3);
+    temp.slope.ub  <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.ub'  ], digits = 3);
+    temp.slope.pv  <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'trend.slope.pv'  ], digits = 3);
+    temp.R2        <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.R.squared'], digits = 3);
+    temp.sum.sqs   <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.sum.sqs'  ], digits = 3);
+    temp.sum.sqs.0 <- format(DF.input[DF.input[,'pcpuid'] == pcpuid,'sum.sqs.0'       ], digits = 3);
 
     temp.subtitle <- paste0(
         "Sen's slope = ",  temp.slope,", ",
-        "CI(slope) = (", temp.slope.lb,", ",temp.slope.ub,"), ",
+        "CI(slope) = (",   temp.slope.lb,", ",temp.slope.ub,"), ",
         "pvalue(slope) = ",temp.slope.pv,", ",
-        "R2 = ",           temp.R2
+        "R2 = ",           temp.R2,", ",
+        "sum.sqs = ",      temp.sum.sqs,", ",
+        "sum.sqs.0 = ",    temp.sum.sqs.0
         );
 
     my.ggplot <- initializePlot(
@@ -176,6 +180,11 @@ visualize.Sens.slopes_time.plot <- function(
         mapping = aes(x = year, ymin = ymin, ymax = ymax),
         fill    = "red",
         alpha   = 0.1
+        );
+
+    my.ggplot <- my.ggplot + geom_hline(
+        yintercept = mean(DF.temp[,'value']),
+        colour     = "blue"
         );
 
     temp.slope     <- DF.input[DF.input[,'pcpuid'] == pcpuid,'litteR.slope'];
