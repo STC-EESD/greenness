@@ -68,34 +68,22 @@ get.pcpuids.to.plot_by.statistic <- function(
 
     vector.output <- c();
 
-    print("A-0");
+    is.selected <- is.na(DF.input[,input.stat]);
+    if ( sum(is.selected) > 0 ) {
+        temp.pcpuids  <- DF.input[is.selected,'pcpuid'];
+        temp.pcpuids  <- sample(x = temp.pcpuids, size = 5, replace = TRUE);
+        vector.output <- c(vector.output,temp.pcpuids);
+        }
 
-    cat("\ninput.stat:",input.stat,"\n");
-
-    cat("\nsummary(DF.input[,",input.stat,"])\n");
-    print( summary(DF.input[,input.stat])       );
-
-    print("A-1");
-
-    is.selected    <- is.na(DF.input[,input.stat]);
-    temp.pcpuids   <- DF.input[is.selected,'pcpuid'];
-    vector.output  <- c(vector.output,temp.pcpuids);
-
-    print("A-2");
-
-    temp.threshold <- quantile(x = DF.input[,input.stat], probs = 0.05, na.rm = TRUE);
+    temp.threshold <- quantile(x = DF.input[,input.stat], probs = 0.01, na.rm = TRUE);
     is.selected    <- (DF.input[,input.stat] < temp.threshold);
     temp.pcpuids   <- DF.input[is.selected,'pcpuid'];
     vector.output  <- c(vector.output,temp.pcpuids);
 
-    print("A-3");
-
-    temp.threshold <- quantile(x = DF.input[,input.stat], probs = 0.95, na.rm = TRUE);
+    temp.threshold <- quantile(x = DF.input[,input.stat], probs = 0.99, na.rm = TRUE);
     is.selected    <- (DF.input[,input.stat] > temp.threshold);
     temp.pcpuids   <- DF.input[is.selected,'pcpuid'];
     vector.output  <- c(vector.output,temp.pcpuids);
-
-    print("A-4");
 
     return( vector.output );
 
