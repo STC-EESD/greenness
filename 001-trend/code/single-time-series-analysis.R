@@ -9,7 +9,7 @@ single.time.series.analysis <- function(x) {
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if( any(is.na(x)) ) {
 
-        output.vector <- rep(x = NA, times = 4 + 3 + 7);
+        output.vector <- rep(x = NA, times = 1 + 4 + 4 + 7);
 
     } else {
 
@@ -19,7 +19,7 @@ single.time.series.analysis <- function(x) {
         # require(mblm);
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-        sum.sq.0 <- sum((x - mean(x))^2);
+        sum.sqs.0 <- sum((x - mean(x))^2);
 
         temp.ts <- stats::ts(
             data      = x,
@@ -44,7 +44,8 @@ single.time.series.analysis <- function(x) {
         litteR.intercept <- intercept(results.litteR.theil_sen);
         litteR.fitted    <- litteR.intercept + litteR.slope * DF.temp[,'year'];
         litteR.residuals <- (litteR.fitted - x);
-        litteR.R.squared <- 1 - sum(litteR.residuals^2) / sum.sq.0;
+        litteR.sum.sqs   <- sum(litteR.residuals^2);
+        litteR.R.squared <- 1 - litteR.sum.sqs / sum.sqs.0;
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         results.deming.theilsen <- deming::theilsen(formula = value ~ year, data = DF.temp);
@@ -53,7 +54,7 @@ single.time.series.analysis <- function(x) {
         deming.intercept <- results.deming.theilsen[['coefficients']]['(Intercept)'];
         deming.fitted    <- deming.intercept + deming.slope * DF.temp[,'year'];
         deming.residuals <- (deming.fitted - x);
-        deming.R.squared <- 1 - sum(deming.residuals^2) / sum.sq.0;
+        deming.R.squared <- 1 - sum(deming.residuals^2) / sum.sqs.0;
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         # results.mblm         <- mblm::mblm(formula = value ~ year, data = DF.temp);
@@ -64,16 +65,19 @@ single.time.series.analysis <- function(x) {
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         output.vector <- c(
 
+            sum.sqs.0 = sum.sqs.0,
+
+            litteR.slope     = litteR.slope,
+            litteR.intercept = litteR.intercept,
+            litteR.R.squared = litteR.R.squared,
+            litteR.sum.sqs   = litteR.sum.sqs,
+
             trend.slope    = results.trend.sens.slope[['estimates']],
             trend.slope.pv = results.trend.sens.slope[['p.value'  ]],
             trend.slope.lb = results.trend.sens.slope[['conf.int']][1],
             trend.slope.ub = results.trend.sens.slope[['conf.int']][2],
             # trend.zstat  = results.trend.sens.slope[['statistic']],
             # conf.level   = attr(x = results.trend.sens.slope[['conf.int']], which = "conf.level"),
-
-            litteR.slope     = litteR.slope,
-            litteR.intercept = litteR.intercept,
-            litteR.R.squared = litteR.R.squared,
 
             deming.slope        = deming.slope,
             deming.slope.lb     = results.deming.theilsen[['ci']][2,1],
@@ -102,14 +106,17 @@ single.time.series.analysis <- function(x) {
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     attr(x = output.vector, which = "names") <- c(
 
-        "trend.slope",
-        "trend.slope.pv",
-        "trend.slope.lb",
-        "trend.slope.ub",
+        "sum.sq.0",
 
         "litteR.slope",
         "litteR.intercept",
         "litteR.R.squared",
+        "litteR.sum.sqs",
+
+        "trend.slope",
+        "trend.slope.pv",
+        "trend.slope.lb",
+        "trend.slope.ub",
 
         "deming.slope",
         "deming.slope.lb",
