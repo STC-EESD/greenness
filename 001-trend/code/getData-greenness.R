@@ -19,10 +19,12 @@ getData.greenness <- function(
 
         DF.greenness <- read.csv(file = CSV.greenness);
         DF.greenness <- DF.greenness[,setdiff(colnames(DF.greenness),"X")];
+        DF.greenness[,'pcpuid'] <- as.character(DF.greenness[,'pcpuid']);
         colnames(DF.greenness) <- gsub(x = colnames(DF.greenness), pattern = "^X", replacement = "");
 
         DF.ndvi <- read.csv(file = CSV.ndvi);
         DF.ndvi <- DF.ndvi[,setdiff(colnames(DF.ndvi),"X")];
+        DF.ndvi[,'pcpuid'] <- as.character(DF.ndvi[,'pcpuid']);
         colnames(DF.ndvi) <- gsub(x = colnames(DF.ndvi), pattern = "^X", replacement = "");
 
         LIST.output <- list(greenness = DF.greenness, ndvi = DF.ndvi);
@@ -43,7 +45,7 @@ getData.greenness <- function(
         DF.input = DF.nick,
         variable = "greenness"
         );
-
+    DF.greenness[,'pcpuid'] <- as.character(DF.greenness[,'pcpuid']);
     cat("\nstr(DF.greenness)\n");
     print( str(DF.greenness)   );
 
@@ -51,7 +53,7 @@ getData.greenness <- function(
         DF.input = DF.nick,
         variable = "ndvi"
         );
-
+    DF.ndvi[,'pcpuid'] <- as.character(DF.ndvi[,'pcpuid']);
     cat("\nstr(DF.ndvi)\n");
     print( str(DF.ndvi)   );
 

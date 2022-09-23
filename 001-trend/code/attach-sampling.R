@@ -68,16 +68,21 @@ attach.sampling_get.DF.output <- function(
 
         colnames.flag <- grep(x = colnames(DF.output), pattern = "^flag", value = TRUE);
         DF.output[,'stratum'] <- apply(X = DF.output[,colnames.flag], MARGIN = 1, FUN = function(x) {return(paste0(x,collapse=""))});
+        DF.output[,'stratum'] <- as.character(DF.output[,'stratum']);
         DF.output <- DF.output[,setdiff(colnames(DF.output),colnames.flag)];
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         DF.table.stratum <- as.data.frame(table(DF.output[,'stratum']));
         colnames(DF.table.stratum) <- c('stratum','n.pop.centres');
+        DF.table.stratum[,'stratum'] <- as.character(DF.table.stratum[,'stratum']);
         DF.table.stratum <- DF.table.stratum[order(DF.table.stratum[,'n.pop.centres'],decreasing = TRUE),];
 
         DF.table.stratum[,'n.selected'] <- 1;
         DF.table.stratum[DF.table.stratum[,'n.pop.centres'] >  10,'n.selected'] <- 2;
         DF.table.stratum[DF.table.stratum[,'n.pop.centres'] > 100,'n.selected'] <- 5;
+
+        cat("\nstr(DF.table.stratum)\n");
+        print( str(DF.table.stratum)   );
 
         cat("\nDF.table.stratum\n");
         print( DF.table.stratum   );
@@ -94,14 +99,19 @@ attach.sampling_get.DF.output <- function(
             temp.stratum    <- DF.table.stratum[row.index,'stratum'   ];
             temp.n.selected <- DF.table.stratum[row.index,'n.selected'];
             temp.pool       <- DF.output[DF.output[,'stratum'] == temp.stratum,'pcpuid'];
-            selected.pcpuids <- c(
-                selected.pcpuids,
-                sample(
-                    x       = temp.pool,
-                    size    = min(temp.n.selected,length(temp.pool)),
-                    replace = FALSE
-                    )
+            temp.selected   <- sample(
+                x       = temp.pool,
+                size    = min(temp.n.selected,length(temp.pool)),
+                replace = FALSE
                 );
+            cat("\n### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###\n");
+            cat("\ntemp.stratum:",   temp.stratum,   "\n");
+            cat("\ntemp.n.selected:",temp.n.selected,"\n");
+            cat("\ntemp.pool\n");
+            print( temp.pool   );
+            cat("\ntemp.selected\n");
+            print( temp.selected   );
+            selected.pcpuids <- c(selected.pcpuids,temp.selected);
             }
 
         DF.output[,'selected'] <- 0;

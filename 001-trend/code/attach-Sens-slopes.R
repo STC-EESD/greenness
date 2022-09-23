@@ -36,6 +36,7 @@ attach.Sens.slopes_get.DF.output <- function(
     if ( file.exists(CSV.output) ) {
 
         DF.output <- read.csv(file = CSV.output);
+        DF.output[,'pcpuid'] <- as.character(DF.output[,'pcpuid']);
         colnames(DF.output) <- gsub(x = colnames(DF.output), pattern = "^X", replacement = "");
 
     } else {
@@ -47,7 +48,7 @@ attach.Sens.slopes_get.DF.output <- function(
             FUN    = single.time.series.analysis
             )));
         colnames.Sens.slopes <- colnames(DF.output);
-        DF.output[,'pcpuid'] <- as.numeric(rownames(DF.output));
+        DF.output[,'pcpuid'] <- rownames(DF.output);
 
         DF.output <- dplyr::left_join(
             x  = DF.output,
