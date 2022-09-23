@@ -93,11 +93,12 @@ attach.sampling_get.DF.output <- function(
         for ( row.index in seq(1,nrow(DF.table.stratum)) ) {
             temp.stratum    <- DF.table.stratum[row.index,'stratum'   ];
             temp.n.selected <- DF.table.stratum[row.index,'n.selected'];
+            temp.pool       <- DF.output[DF.output[,'stratum'] == temp.stratum,'pcpuid'];
             selected.pcpuids <- c(
                 selected.pcpuids,
                 sample(
-                    x       = DF.output[DF.output[,'stratum'] == temp.stratum,'pcpuid'],
-                    size    = temp.n.selected,
+                    x       = temp.pool,
+                    size    = min(temp.n.selected,length(temp.pool)),
                     replace = FALSE
                     )
                 );
