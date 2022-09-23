@@ -44,7 +44,7 @@ attach.sampling_get.DF.output <- function(
         DF.output <- DF.input;
         my.probs  <- seq(0,9,3)/9;; # seq(0,10,2)/10;
 
-        DF.output[,'quintile.slope'] <- base::cut(
+        DF.output[,'quintile.abs.slope'] <- base::cut(
             x              = abs(DF.output[,'trend.slope']),
             breaks         = quantile(x = abs(DF.output[,'trend.slope']), prob = my.probs),
             include.lowest = TRUE
@@ -62,9 +62,9 @@ attach.sampling_get.DF.output <- function(
             include.lowest = TRUE
             );
 
-        DF.output[,'flag.slope'] <- as.numeric(DF.output[,'quintile.slope']);
-        DF.output[,'flag.pv'   ] <- as.numeric(DF.output[,'quintile.pv'   ]);
-        DF.output[,'flag.R2'   ] <- as.numeric(DF.output[,'quintile.R2'   ]);
+        DF.output[,'flag.slope'] <- as.numeric(DF.output[,'quintile.abs.slope']);
+        DF.output[,'flag.pv'   ] <- as.numeric(DF.output[,'quintile.pv'       ]);
+        DF.output[,'flag.R2'   ] <- as.numeric(DF.output[,'quintile.R2'       ]);
 
         colnames.flag <- grep(x = colnames(DF.output), pattern = "^flag", value = TRUE);
         DF.output[,'stratum'] <- apply(X = DF.output[,colnames.flag], MARGIN = 1, FUN = function(x) {return(paste0(x,collapse=""))});
@@ -72,8 +72,8 @@ attach.sampling_get.DF.output <- function(
         DF.output <- DF.output[,setdiff(colnames(DF.output),colnames.flag)];
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-        DF.table.stratum <- as.data.frame(table(DF.output[,'stratum']));
-        colnames(DF.table.stratum) <- c('stratum','n.pop.centres');
+        DF.table.stratum <- as.data.frame(table(DF.output[,c('quintile.abs.slope','quintile.pv','quintile.R2','stratum')]));
+        colnames(DF.table.stratum) <- c('range.abs.slope','range.pv','range.R2','stratum','n.pop.centres');
         DF.table.stratum[,'stratum'] <- as.character(DF.table.stratum[,'stratum']);
         DF.table.stratum <- DF.table.stratum[order(DF.table.stratum[,'n.pop.centres'],decreasing = TRUE),];
 
@@ -124,6 +124,12 @@ attach.sampling_get.DF.output <- function(
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         write.csv(file = CSV.output, x = DF.output, row.names = FALSE);
+
+        write.csv(
+            file      = "DF-stratum.csv",
+            x         = DF.table.stratum,
+            row.names = FALSE
+            );
 
         }
 
