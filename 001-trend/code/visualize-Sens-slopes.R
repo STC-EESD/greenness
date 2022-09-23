@@ -84,7 +84,7 @@ visualize.Sens.slopes_variable <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    if ( !is.null(pcpuids.to.plot) ) {
+    if ( sum(DF.input[,'selected']) > 0 ) {
 
         colnames.years <- grep(
             x       = colnames(DF.input),
@@ -98,11 +98,13 @@ visualize.Sens.slopes_variable <- function(
             y.limits <- c(0,1);
             }
 
-        for ( temp.pcpuid in pcpuids.to.plot ) {
+        DF.temp <- DF.input[DF.input[,'selected'] > 0,c('pcpuid','stratum')];
+        for ( row.index in seq(1,nrow(DF.temp)) ) {
             visualize.Sens.slopes_time.plot(
                 variable       = variable,
                 DF.input       = DF.input,
-                pcpuid         = temp.pcpuid,
+                pcpuid         = DF.temp[row.index,'pcpuid' ],
+                stratum        = DF.temp[row.index,'stratum'],
                 colnames.years = colnames.years,
                 y.limits       = y.limits,
                 );
@@ -118,12 +120,13 @@ visualize.Sens.slopes_time.plot <- function(
     variable       = NULL,
     DF.input       = NULL,
     pcpuid         = NULL,
+    stratum        = NULL,
     colnames.years = NULL,
     y.limits       = NULL,
     dots.per.inch  = 300
     ) {
 
-    output.directory <- variable;
+    output.directory <- file.path(variable,stratum);
     if (!dir.exists(output.directory)) {
         dir.create(path = output.directory, recursive = TRUE);
         }

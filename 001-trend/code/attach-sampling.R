@@ -51,14 +51,14 @@ attach.sampling_get.DF.output <- function(
             );
 
         DF.output[,'quintile.pv'] <- base::cut(
-            x      = abs(DF.output[,'trend.slope.pv']),
-            breaks = quantile(x = abs(DF.output[,'trend.slope.pv']), prob = my.probs),
+            x      = DF.output[,'trend.slope.pv'],
+            breaks = quantile(x = DF.output[,'trend.slope.pv'], prob = my.probs),
             include.lowest = TRUE
             );
 
         DF.output[,'quintile.R2'] <- base::cut(
-            x      = abs(DF.output[,'litteR.R.squared']),
-            breaks = quantile(x = abs(DF.output[,'litteR.R.squared']), prob = my.probs),
+            x      = DF.output[,'litteR.R.squared'],
+            breaks = quantile(x = DF.output[,'litteR.R.squared'], prob = my.probs),
             include.lowest = TRUE
             );
 
@@ -76,7 +76,7 @@ attach.sampling_get.DF.output <- function(
         DF.table.stratum <- DF.table.stratum[order(DF.table.stratum[,'n.pop.centres'],decreasing = TRUE),];
 
         DF.table.stratum[,'n.selected'] <- 1;
-        DF.table.stratum[DF.table.stratum[,'n.pop.centres'] >  20,'n.selected'] <- 2;
+        DF.table.stratum[DF.table.stratum[,'n.pop.centres'] >  10,'n.selected'] <- 2;
         DF.table.stratum[DF.table.stratum[,'n.pop.centres'] > 100,'n.selected'] <- 5;
 
         cat("\nDF.table.stratum\n");

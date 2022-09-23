@@ -69,6 +69,10 @@ LIST.sampling <- attach.sampling(list.input = LIST.Sens.slopes);
 cat("\nstr(LIST.sampling)\n");
 print( str(LIST.sampling)   );
 
+visualize.Sens.slopes(
+    list.input = LIST.sampling
+    );
+
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 # pcpuids.to.plot <- get.pcpuids.to.plot(
 #     list.Sens.slopes = LIST.Sens.slopes
