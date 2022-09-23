@@ -76,6 +76,7 @@ attach.sampling_get.DF.output <- function(
         colnames(DF.table.stratum) <- c('range.abs.slope','range.pv','range.R2','stratum','n.pop.centres');
         DF.table.stratum[,'stratum'] <- as.character(DF.table.stratum[,'stratum']);
         DF.table.stratum <- DF.table.stratum[order(DF.table.stratum[,'n.pop.centres'],decreasing = TRUE),];
+        DF.table.stratum <- DF.table.stratum[DF.table.stratum[,'n.pop.centres'] > 0,];
 
         DF.table.stratum[,'n.selected'] <- 1;
         DF.table.stratum[DF.table.stratum[,'n.pop.centres'] >  10,'n.selected'] <- 2;
