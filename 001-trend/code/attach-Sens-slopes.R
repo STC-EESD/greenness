@@ -11,7 +11,7 @@ attach.Sens.slopes <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     LIST.output <- list();
     for ( temp.variable in names(list.input) ) {
-        DF.input <- LIST.input[[temp.variable]];
+        DF.input <- list.input[[temp.variable]];
         rownames(DF.input) <- DF.input[,'pcpuid'];
         DF.output <- attach.Sens.slopes_get.DF.output(
             DF.input   = DF.input,

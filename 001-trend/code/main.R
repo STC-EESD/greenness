@@ -28,6 +28,7 @@ require(trend);
 
 # source supporting R code
 code.files <- c(
+    "attach-sampling.R",
     "attach-Sens-slopes.R",
     "getData-greenness.R",
     "get-pcpuids-to-plot.R",
@@ -63,22 +64,27 @@ cat("\nstr(LIST.Sens.slopes)\n");
 print( str(LIST.Sens.slopes)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-pcpuids.to.plot <- get.pcpuids.to.plot(
-    list.Sens.slopes = LIST.Sens.slopes
-    );
+LIST.sampling <- attach.sampling(list.input = LIST.Sens.slopes);
 
-cat("\nlength(pcpuids.to.plot)\n");
-print( length(pcpuids.to.plot)   );
-
-cat("\npcpuids.to.plot\n");
-print( pcpuids.to.plot   );
+cat("\nstr(LIST.sampling)\n");
+print( str(LIST.sampling)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-visualize.Sens.slopes(
-    list.input      = LIST.Sens.slopes,
-    pcpuids.to.plot = pcpuids.to.plot
-  # pcpuids.to.plot = NULL
-    );
+# pcpuids.to.plot <- get.pcpuids.to.plot(
+#     list.Sens.slopes = LIST.Sens.slopes
+#     );
+#
+# cat("\nlength(pcpuids.to.plot)\n");
+# print( length(pcpuids.to.plot)   );
+#
+# cat("\npcpuids.to.plot\n");
+# print( pcpuids.to.plot   );
+#
+# visualize.Sens.slopes(
+#     list.input      = LIST.Sens.slopes,
+#     pcpuids.to.plot = pcpuids.to.plot
+#   # pcpuids.to.plot = NULL
+#     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 # row.index = 993;
