@@ -13,7 +13,7 @@ single.time.series.analysis <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if( any(is.na(x)) ) {
 
-        output.vector <- rep(x = NA, times = 1 + 4 + 4 + 7);
+        output.vector <- rep(x = NA, times = 3 + 1 + 4 + 4 + 7);
 
     } else {
 
@@ -67,7 +67,16 @@ single.time.series.analysis <- function(
         # mblm.R.squared       <- 1 - sum(results.mblm$residuals^2) / sum((x - mean(x))^2)
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+        avg.5yr.baseline <- mean(x[seq(          1,        5)]);
+        avg.5yr.latest   <- mean(x[seq(length(x)-4,length(x))]);
+        diff.stat        <- avg.5yr.baseline - avg.5yr.latest
+
+        ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         output.vector <- c(
+
+            avg.5yr.baseline = avg.5yr.baseline,
+            avg.5yr.latest   = avg.5yr.latest,
+            diff.stat        = avg.5yr.latest - avg.5yr.baseline,
 
             sum.sqs.0 = sum.sqs.0,
 
@@ -109,6 +118,10 @@ single.time.series.analysis <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     attr(x = output.vector, which = "names") <- c(
+
+        "avg.5yr.baseline",
+        "avg.5yr.latest",
+        "diff.stat",
 
         "sum.sqs.0",
 
