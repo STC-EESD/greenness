@@ -31,7 +31,7 @@ attach.Sens.slopes <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n# ",thisFunctionName,"() exits."));
     cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
-    return( NULL );
+    return( DF.output );
 
     }
 

@@ -30,11 +30,11 @@ require(trend);
 code.files <- c(
     "attach-Sens-slopes.R",
     "getData-greenness-ndvi.R",
-    "single-time-series-analysis.R"
+    "initializePlot.R",
+    "single-time-series-analysis.R",
+    "visualize-Sens-slopes.R"
     # "attach-sampling.R",
     # "get-pcpuids-to-plot.R",
-    # "initializePlot.R",
-    # "visualize-Sens-slopes.R"
     );
 
 for ( code.file in code.files ) {
@@ -72,6 +72,13 @@ DF.greeness.ndvi <- getData.greenness.ndvi(
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.ndvi.Sens.slope <- attach.Sens.slopes(
     FILE.input = LIST.input[['ndvi']][['file']]
+    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+visualize.Sens.slopes(
+    variable       = "NDVI",
+    DF.input       = DF.ndvi.Sens.slope,
+    DGUIDs.to.plot = c('2021C151005','2021C151004','2021C151003','2021C151002')
     );
 
 ##################################################
