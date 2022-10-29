@@ -1,175 +1,176 @@
 
-getData.greenness <- function(
-    path          = NULL,
-    CSV.nick      = "DF-nick.csv",
-    CSV.greenness = "DF-greenness.csv",
-    CSV.ndvi      = "DF-ndvi.csv"
+getData.greenness.ndvi <- function(
+    LIST.input = NULL,
+    CSV.output = "DF-CODR-greenness-ndvi.csv"
     ) {
 
-    thisFunctionName <- "getData.greenness";
+    thisFunctionName <- "getData.greenness.ndvi";
 
     cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###");
     cat(paste0("\n# ",thisFunctionName,"() starts.\n"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    if ( all(file.exists(CSV.greenness),file.exists(CSV.ndvi)) ) {
+    if ( file.exists(CSV.output) ) {
         cat("\n");
-        cat(paste0("The files ",CSV.greenness," and ",CSV.ndvi," already exist; loading data ..."));
+        cat(paste0("The file ",CSV.output," already exists; loading data ..."));
         cat("\n");
 
-        DF.greenness <- read.csv(file = CSV.greenness);
-        DF.greenness <- DF.greenness[,setdiff(colnames(DF.greenness),"X")];
-        DF.greenness[,'pcpuid'] <- as.character(DF.greenness[,'pcpuid']);
-        colnames(DF.greenness) <- gsub(x = colnames(DF.greenness), pattern = "^X", replacement = "");
+        DF.output <- read.csv(file = CSV.output);
 
-        DF.ndvi <- read.csv(file = CSV.ndvi);
-        DF.ndvi <- DF.ndvi[,setdiff(colnames(DF.ndvi),"X")];
-        DF.ndvi[,'pcpuid'] <- as.character(DF.ndvi[,'pcpuid']);
-        colnames(DF.ndvi) <- gsub(x = colnames(DF.ndvi), pattern = "^X", replacement = "");
-
-        LIST.output <- list(greenness = DF.greenness, ndvi = DF.ndvi);
         cat(paste0("\n# ",thisFunctionName,"() exits."));
         cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
-        return( LIST.output );
+        return( DF.output );
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.nick <- getData.greenness_nick(path = path);
-    cat("\nstr(DF.nick)\n");
-    print( str(DF.nick)   );
+    # for ( temp.list in LIST.input ) {
+    #     DF.temp <- getData.greenness.ndvi_read(
+    #         FILE.input = temp.list[['file']]
+    #         );
+    #     }
 
-    write.csv(file = CSV.nick, x = DF.nick);
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.greenness <- getData.greenness_widen(
-        DF.input = DF.nick,
-        variable = "greenness"
-        );
-    DF.greenness[,'pcpuid'] <- as.character(DF.greenness[,'pcpuid']);
-    cat("\nstr(DF.greenness)\n");
-    print( str(DF.greenness)   );
-
-    DF.ndvi <- getData.greenness_widen(
-        DF.input = DF.nick,
-        variable = "ndvi"
-        );
-    DF.ndvi[,'pcpuid'] <- as.character(DF.ndvi[,'pcpuid']);
-    cat("\nstr(DF.ndvi)\n");
-    print( str(DF.ndvi)   );
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    write.csv(file = CSV.greenness, x = DF.greenness, row.names = FALSE);
-    write.csv(file = CSV.ndvi,      x = DF.ndvi     , row.names = FALSE);
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    LIST.output <- list(
-        greenness = DF.greenness,
-        ndvi      = DF.ndvi
+    DF.temp <- getData.greenness.ndvi_read(
+        temp.input = LIST.input[[1]]
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n# ",thisFunctionName,"() exits."));
     cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
-    return( LIST.output );
+    return( NULL );
 
     }
 
 ##################################################
-getData.greenness_widen <- function(
-    DF.input = NULL,
-    variable = NULL
-    ) {
-    DF.output <- DF.input[DF.input[,'variable'] == variable,c('pcpuid','pcname','pruid','pcclass','year','value')];
-    DF.output <- tidyr::spread(
-        data  = DF.output,
-        key   = 'year',
-        value = value
-        );
-    return( DF.output );
-    }
-
-getData.greenness_nick <- function(
-    path = NULL
+getData.greenness.ndvi_read <- function(
+    temp.input = NULL
     ) {
 
-    DF.xlsx <- readxl::read_xlsx(path = path);
-    DF.xlsx <- as.data.frame(DF.xlsx);
-    colnames(DF.xlsx) <- tolower(colnames(DF.xlsx));
+    FILE.input       <- temp.input[['file'    ]];
+    integer.dim2     <- temp.input[['dim2'    ]];
+    integer.n.digits <- temp.input[['n.digits']];
 
-    cat("\nstr(DF.xlsx)\n");
-    print( str(DF.xlsx)   );
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.wide <- read.csv(file = FILE.input);
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.xlsx$pcpuid  <- as.numeric(DF.xlsx$pcpuid);
-    DF.xlsx$year    <- as.numeric(DF.xlsx$year   );
-    DF.xlsx$pcclass <- as.numeric(DF.xlsx$pcclass);
-    DF.xlsx$pruid   <- as.numeric(DF.xlsx$pruid  );
-    DF.xlsx$value   <- as.numeric(DF.xlsx$value  );
+    cat("\nstr(DF.wide)\n");
+    print( str(DF.wide)   );
+    cat("\nsummary(DF.wide)\n");
+    print( summary(DF.wide)   );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    colnames(DF.xlsx) <- gsub(
-        x           = colnames(DF.xlsx),
-        pattern     = "^dim$",
-        replacement = "variable"
+    cat("\nDF.wide[is.na(DF.wide[,'dim1']),]\n");
+    print( DF.wide[is.na(DF.wide[,'dim1']),]   );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    rows.all.NAs <- apply(
+        X      = DF.wide,
+        MARGIN = 1,
+        FUN    = function(x) { return( all(is.na(x) | (x == "")) ) }
         );
 
-    DF.xlsx[DF.xlsx[,"variable"] == "1", "variable"] <- "greenness";
-    DF.xlsx[DF.xlsx[,"variable"] == "2", "variable"] <- "ndvi";
+    DF.wide <- DF.wide[!rows.all.NAs,];
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat("\nlength(unique(DF.xlsx$objectid))\n");
-    print( length(unique(DF.xlsx$objectid))   );
+    cat("\nstr(DF.wide)\n");
+    print( str(DF.wide)   );
+    cat("\nsummary(DF.wide)\n");
+    print( summary(DF.wide)   );
 
-    cat("\nlength(unique(DF.xlsx$pcpuid))\n");
-    print( length(unique(DF.xlsx$pcpuid))   );
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    removed.colnames  <- grep(x = colnames(DF.wide), pattern = "(^dim2$|^DGUID$|^X$|^X\\.[0-9]+)", value = TRUE);
+    cat("\nremoved.colnames\n");
+    print( removed.colnames   );
 
-    cat("\ntable(DF.xlsx$year)\n");
-    print( table(DF.xlsx$year)   );
+    cat("\nsummary(DF.wide[,removed.colnames])\n");
+    print( summary(DF.wide[,removed.colnames])   );
 
-    cat("\ntable(DF.xlsx$variable)\n");
-    print( table(DF.xlsx$variable)   );
+    retained.colnames <- setdiff(colnames(DF.wide),removed.colnames);
+    cat("\nretained.colnames\n");
+    print( retained.colnames   );
 
-    cat("\nlength(unique(DF.xlsx$pcname))\n");
-    print( length(unique(DF.xlsx$pcname))   );
+    DF.wide <- DF.wide[,retained.colnames];
+    colnames(DF.wide) <- gsub(
+        x           = colnames(DF.wide),
+        pattern     = "^X",
+        replacement = ""
+        );
+    cat("\nstr(DF.wide)\n");
+    print( str(DF.wide)   );
 
-    cat("\ntable(DF.xlsx$pcclass)\n");
-    print( table(DF.xlsx$pcclass)   );
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    vector.dim1 <- DF.wide[,'dim1'];
 
-    cat("\ntable(DF.xlsx$pruid)\n");
-    print( table(DF.xlsx$pruid)   );
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    vector.years <- grep(x = colnames(DF.wide), pattern = "^[0-9]+$", value = TRUE);
 
-    cat("\nlength(unique(DF.xlsx$dguid))\n");
-    print( length(unique(DF.xlsx$dguid))   );
+    cat("\nstr(vector.years)\n");
+    print( str(vector.years)   );
+    cat("\nvector.years\n");
+    print( vector.years   );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat("\nstr(DF.xlsx)\n");
-    print( str(DF.xlsx)   );
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.output <- expand.grid(
+        dim1            = vector.dim1,
+        ReferencePeriod = vector.years
+        );
+    DF.output <- DF.output[,c('ReferencePeriod','dim1')];
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    test.dguid <- gsub(
-        x           = DF.xlsx$dguid,
-        pattern     = "S",
-        replacement = "_"
+    cat("\nstr(DF.output)\n");
+    print( str(DF.output)   );
+    cat("\nsummary(DF.output)\n");
+    print( summary(DF.output)   );
+    cat("\nhead(DF.output)\n");
+    print( head(DF.output)   );
+
+    cat("\nDF.output[is.na(DF.output[,'dim1']),]\n");
+    print( DF.output[is.na(DF.output[,'dim1']),]   );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.long <- DF.wide %>% tidyr::gather(
+        key   = "ReferencePeriod",
+        value = "Value",
+        vector.years
         );
 
-    cat("\nlength(unique(test.dguid))\n");
-    print( length(unique(test.dguid))   );
+    cat("\nstr(DF.long)\n");
+    print( str(DF.long)   );
+    cat("\nhead(DF.long)\n");
+    print( head(DF.long)   );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.unique <- unique(DF.xlsx[,c('pcpuid','dguid')]);
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.output <- dplyr::left_join(
+        x = DF.output,
+        y = DF.long,
+        by = c('ReferencePeriod','dim1')
+        );
 
-    cat("\nnrow(DF.unique)\n");
-    print( nrow(DF.unique)   );
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.output[,"ReferencePeriod2"] <- "";
+    DF.output[,"Symbol"          ] <- 0L;
+    DF.output[,"SecurityLevel"   ] <- 0L;
+    DF.output[,"dim2"            ] <- integer.dim2;
 
-    cat("\nlength(unique(DF.unique$pcpuid))\n");
-    print( length(unique(DF.unique$pcpuid))   );
+    DF.output[,"Status"] <- 0L;
+    DF.output[is.na(DF.output[,"Value"]),"Status"] <- 1L;
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.output <- DF.xlsx[,c('pcpuid','pcname','pruid','pcclass','year','variable','value')];
-    # cat("\nstr(DF.output)\n");
-    # print( str(DF.output)   );
+    ordered.colnames <- c(
+        "ReferencePeriod",
+        "ReferencePeriod2",
+        "Value",
+        "Symbol",
+        "Status",
+        "SecurityLevel",
+        "dim1",
+        "dim2"
+        );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.output <- DF.output[,ordered.colnames];
+
+    cat("\nstr(DF.output)\n");
+    print( str(DF.output)   );
+
+    cat("\nsummary(DF.output)\n");
+    print( summary(DF.output)   );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     return( DF.output );
 
     }

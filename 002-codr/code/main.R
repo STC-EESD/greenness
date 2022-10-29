@@ -30,7 +30,7 @@ require(trend);
 code.files <- c(
     # "attach-sampling.R",
     # "attach-Sens-slopes.R",
-    # "getData-greenness.R",
+    "getData-greenness-ndvi.R"
     # "get-pcpuids-to-plot.R",
     # "initializePlot.R",
     # "single-time-series-analysis.R",
@@ -55,70 +55,25 @@ cat(paste0("\n# n.cores = ",n.cores,"\n"));
 # LIST.input <- getData.greenness(path = FILE.input);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-FILE.input <- file.path(data.directory,"2022-10-28.01","AverageNDVI_All_2022.csv");
-
-DF.ndvi.wide <- read.csv(file = FILE.input);
-cat("\nstr(DF.ndvi.wide)\n");
-print( str(DF.ndvi.wide)   );
-
-summary( DF.ndvi.wide[,c('X','X.1','X.2','X.3')] );
-
-removed.colnames  <- grep(x = colnames(DF.ndvi.wide), pattern = "(^dim2$|^DGUID$|^X$|^X\\.[0-9]+)", value = TRUE);
-cat("\nremoved.colnames\n");
-print( removed.colnames   );
-
-retained.colnames <- setdiff(colnames(DF.ndvi.wide),removed.colnames);
-cat("\nretained.colnames\n");
-print( retained.colnames   );
-
-DF.ndvi.wide <- DF.ndvi.wide[,retained.colnames];
-colnames(DF.ndvi.wide) <- gsub(
-    x           = colnames(DF.ndvi.wide),
-    pattern     = "^X",
-    replacement = ""
+data.snapshot <- "2022-10-28.01";
+LIST.input <- list(
+    greenness = list(
+        file     = file.path(data.directory,data.snapshot,"Greenness_All_2022.csv"),
+        dim2     = 1L,
+        n.digits = 1L
+        ),
+    ndvi = list(
+        file     = file.path(data.directory,data.snapshot,"AverageNDVI_All_2022.csv"),
+        dim2     = 2L,
+        n.digits = 4L
+        )
     );
-cat("\nstr(DF.ndvi.wide)\n");
-print( str(DF.ndvi.wide)   );
+
+DF.greeness.ndvi <- getData.greenness.ndvi(
+    LIST.input = LIST.input
+    );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-years <- grep(x = colnames(DF.ndvi.wide), pattern = "^[0-9]+$", value = TRUE);
-cat("\nstr(years)\n");
-print( str(years)   );
-cat("\nyears\n");
-print( years   );
-
-DF.ndvi.long <- DF.ndvi.wide %>% tidyr::gather(
-    key   = "ReferencePeriod",
-    value = "Value",
-    years
-    );
-
-DF.ndvi.long[,"ReferencePeriod2"] <- "";
-DF.ndvi.long[,"Symbol"          ] <- 0L;
-DF.ndvi.long[,"SecurityLevel"   ] <- 0L;
-DF.ndvi.long[,"dim2"            ] <- 2L;
-
-DF.ndvi.long[,"Status"] <- 0L;
-DF.ndvi.long[is.na(DF.ndvi.long[,"Value"]),"Status"] <- 1L;
-
-ordered.colnames <- c(
-    "ReferencePeriod",
-    "ReferencePeriod2",
-    "Value",
-    "Symbol",
-    "Status",
-    "SecurityLevel",
-    "dim1",
-    "dim2"
-    );
-
-DF.ndvi.long <- DF.ndvi.long[,ordered.colnames];
-
-cat("\nstr(DF.ndvi.long)\n");
-print( str(DF.ndvi.long)   );
-
-cat("\nsummary(DF.ndvi.long)\n");
-print( summary(DF.ndvi.long)   );
 
 ##################################################
 print( warnings() );
