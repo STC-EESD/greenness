@@ -23,15 +23,27 @@ getData.greenness.ndvi <- function(
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    # for ( temp.list in LIST.input ) {
-    #     DF.temp <- getData.greenness.ndvi_read(
-    #         FILE.input = temp.list[['file']]
-    #         );
-    #     }
+    DF.output <- data.frame();
+    for ( temp.list in LIST.input ) {
+        DF.temp <- getData.greenness.ndvi_read(
+            temp.input = temp.list
+            );
+        DF.output <- rbind(DF.output,DF.temp);
+        }
 
-    DF.temp <- getData.greenness.ndvi_read(
-        temp.input = LIST.input[[1]]
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    row.ordering <- order(
+        DF.output[,'ReferencePeriod'],
+        DF.output[,'dim1'],
+        DF.output[,'dim2']
         );
+    DF.output <- DF.output[row.ordering,];
+
+    cat("\nstr(DF.output)\n");
+    print( str(DF.output)   );
+
+    cat("\nDF.output[1:100,]\n");
+    print( DF.output[1:100,]   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n# ",thisFunctionName,"() exits."));
@@ -143,6 +155,8 @@ getData.greenness.ndvi_read <- function(
         );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.output[,"ReferencePeriod"] <- paste0(DF.output[,"ReferencePeriod"],"0101");
+
     DF.output[,"ReferencePeriod2"] <- "";
     DF.output[,"Symbol"          ] <- 0L;
     DF.output[,"SecurityLevel"   ] <- 0L;
@@ -151,6 +165,14 @@ getData.greenness.ndvi_read <- function(
     DF.output[,"Status"] <- 0L;
     DF.output[is.na(DF.output[,"Value"]),"Status"] <- 1L;
 
+    DF.output[,"Value"] <- (10^integer.n.digits) * round(
+        x      = DF.output[,"Value"],
+        digits = integer.n.digits
+        );
+    DF.output[,"Value"] <- as.character(DF.output[,"Value"]);
+    DF.output[is.na(DF.output[,"Value"]),"Value"] <- "";
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     ordered.colnames <- c(
         "ReferencePeriod",
         "ReferencePeriod2",
