@@ -49,6 +49,7 @@ getData.greenness.ndvi <- function(
     write.csv(
         file      = CSV.output,
         x         = DF.output,
+        quote     = FALSE,
         row.names = FALSE
         );
 

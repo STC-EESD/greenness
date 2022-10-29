@@ -51,10 +51,6 @@ n.cores   <- ifelse(test = is.macOS, yes = 2, no = parallel::detectCores() - 1);
 cat(paste0("\n# n.cores = ",n.cores,"\n"));
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# FILE.input <- file.path(data.directory,"2022-10-28.01","AverageNDVI_All_2022.csv");
-# LIST.input <- getData.greenness(path = FILE.input);
-
-### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 data.snapshot <- "2022-10-28.01";
 LIST.input <- list(
     greenness = list(
