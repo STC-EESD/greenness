@@ -28,12 +28,12 @@ require(trend);
 
 # source supporting R code
 code.files <- c(
+    "attach-Sens-slopes.R",
+    "getData-greenness-ndvi.R",
+    "single-time-series-analysis.R"
     # "attach-sampling.R",
-    # "attach-Sens-slopes.R",
-    "getData-greenness-ndvi.R"
     # "get-pcpuids-to-plot.R",
     # "initializePlot.R",
-    # "single-time-series-analysis.R",
     # "visualize-Sens-slopes.R"
     );
 
@@ -70,6 +70,9 @@ DF.greeness.ndvi <- getData.greenness.ndvi(
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+DF.ndvi.Sens.slope <- attach.Sens.slopes(
+    FILE.input = LIST.input[['ndvi']][['file']]
+    );
 
 ##################################################
 print( warnings() );

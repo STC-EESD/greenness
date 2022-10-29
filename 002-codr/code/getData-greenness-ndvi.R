@@ -61,6 +61,39 @@ getData.greenness.ndvi <- function(
     }
 
 ##################################################
+getData.greenness.ndvi_remove.superfluous.rows.columns <- function(
+    DF.input = NULL
+    ) {
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    DF.output <- DF.input;
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    rows.all.NAs <- apply(
+        X      = DF.output,
+        MARGIN = 1,
+        FUN    = function(x) { return( all(is.na(x) | (x == "")) ) }
+        );
+
+    DF.output <- DF.output[!rows.all.NAs,];
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    removed.colnames  <- grep(x = colnames(DF.output), pattern = "(^X$|^X\\.[0-9]+)", value = TRUE);
+    retained.colnames <- setdiff(colnames(DF.output),removed.colnames);
+    DF.output         <- DF.output[,retained.colnames];
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    colnames(DF.output) <- gsub(
+        x           = colnames(DF.output),
+        pattern     = "^X",
+        replacement = ""
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    return( DF.output );
+
+    }
+
 getData.greenness.ndvi_read <- function(
     temp.input = NULL
     ) {
@@ -71,49 +104,14 @@ getData.greenness.ndvi_read <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.wide <- read.csv(file = FILE.input);
-
-    cat("\nstr(DF.wide)\n");
-    print( str(DF.wide)   );
-    cat("\nsummary(DF.wide)\n");
-    print( summary(DF.wide)   );
-
-    cat("\nDF.wide[is.na(DF.wide[,'dim1']),]\n");
-    print( DF.wide[is.na(DF.wide[,'dim1']),]   );
-
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    rows.all.NAs <- apply(
-        X      = DF.wide,
-        MARGIN = 1,
-        FUN    = function(x) { return( all(is.na(x) | (x == "")) ) }
+    DF.wide <- getData.greenness.ndvi_remove.superfluous.rows.columns(
+        DF.input = DF.wide
         );
 
-    DF.wide <- DF.wide[!rows.all.NAs,];
-
-    cat("\nstr(DF.wide)\n");
-    print( str(DF.wide)   );
-    cat("\nsummary(DF.wide)\n");
-    print( summary(DF.wide)   );
-
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    removed.colnames  <- grep(x = colnames(DF.wide), pattern = "(^dim2$|^DGUID$|^X$|^X\\.[0-9]+)", value = TRUE);
-    cat("\nremoved.colnames\n");
-    print( removed.colnames   );
-
-    cat("\nsummary(DF.wide[,removed.colnames])\n");
-    print( summary(DF.wide[,removed.colnames])   );
-
+    removed.colnames  <- grep(x = colnames(DF.wide), pattern = "(^dim2$|^DGUID$)", value = TRUE);
     retained.colnames <- setdiff(colnames(DF.wide),removed.colnames);
-    cat("\nretained.colnames\n");
-    print( retained.colnames   );
-
-    DF.wide <- DF.wide[,retained.colnames];
-    colnames(DF.wide) <- gsub(
-        x           = colnames(DF.wide),
-        pattern     = "^X",
-        replacement = ""
-        );
-    cat("\nstr(DF.wide)\n");
-    print( str(DF.wide)   );
+    DF.wide           <- DF.wide[,retained.colnames];
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     vector.dim1 <- DF.wide[,'dim1'];
