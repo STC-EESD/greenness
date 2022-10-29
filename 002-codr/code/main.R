@@ -81,15 +81,38 @@ cat("\nstr(DF.ndvi.wide)\n");
 print( str(DF.ndvi.wide)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+years <- grep(x = colnames(DF.ndvi.wide), pattern = "^[0-9]+$", value = TRUE);
+cat("\nstr(years)\n");
+print( str(years)   );
+cat("\nyears\n");
+print( years   );
+
 DF.ndvi.long <- DF.ndvi.wide %>% tidyr::gather(
-    key   = "dim1",
-    value = "ndvi"
+    key   = "ReferencePeriod",
+    value = "Value",
+    years
     );
 
 DF.ndvi.long[,"ReferencePeriod2"] <- "";
 DF.ndvi.long[,"Symbol"          ] <- 0L;
 DF.ndvi.long[,"SecurityLevel"   ] <- 0L;
 DF.ndvi.long[,"dim2"            ] <- 2L;
+
+DF.ndvi.long[,"Status"] <- 0L;
+DF.ndvi.long[is.na(DF.ndvi.long[,"Value"]),"Status"] <- 1L;
+
+ordered.colnames <- c(
+    "ReferencePeriod",
+    "ReferencePeriod2",
+    "Value",
+    "Symbol",
+    "Status",
+    "SecurityLevel",
+    "dim1",
+    "dim2"
+    );
+
+DF.ndvi.long <- DF.ndvi.long[,ordered.colnames];
 
 cat("\nstr(DF.ndvi.long)\n");
 print( str(DF.ndvi.long)   );
