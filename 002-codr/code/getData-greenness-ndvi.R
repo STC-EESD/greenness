@@ -46,9 +46,16 @@ getData.greenness.ndvi <- function(
     print( DF.output[1:100,]   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    write.csv(
+        file      = CSV.output,
+        x         = DF.output,
+        row.names = FALSE
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n# ",thisFunctionName,"() exits."));
     cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
-    return( NULL );
+    return( DF.output );
 
     }
 
