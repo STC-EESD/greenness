@@ -1,5 +1,9 @@
 
-single.time.series.analysis <- function(x) {
+single.time.series.analysis <- function(
+    x        = NULL,
+    min.year = NULL,
+    max.year = NULL
+    ) {
 
     thisFunctionName <- "single.time.series.analysis";
 
@@ -23,11 +27,11 @@ single.time.series.analysis <- function(x) {
 
         temp.ts <- stats::ts(
             data      = x,
-            start     = c(2000,1),
+            start     = c(min.year,1),
             frequency = 1
             );
 
-        years <- seq(2000,2022);
+        years <- seq(min.year,max.year);
         years.centred <- years - mean(years);
         DF.temp <- data.frame(
             year  = years.centred,
@@ -148,12 +152,14 @@ single.time.series.analysis <- function(x) {
 ##################################################
 test_single.time.series.analysis <- function(
     DF.input  = NULL,
-    row.index = 1
+    row.index = 1,
+    min.year  = 2000,
+    max.year  = 2022
     ) {
     thisFunctionName <- "test_single.time.series.analysis";
     cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###");
     cat(paste0("\n# ",thisFunctionName,"() starts.\n"));
-    years <- seq(2000,2022);
+    years <- seq(min.year,max.year);
     DF.temp <- data.frame(year = years, value = as.numeric(DF.input[row.index,as.character(years)]));
     DF.temp[,'years.centred'] <- DF.temp[,'year'] - mean(DF.temp[,'year']);
     DF.temp[,'avg.value'    ] <- mean(DF.temp[,'value']);

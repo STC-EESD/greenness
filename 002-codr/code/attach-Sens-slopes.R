@@ -50,10 +50,30 @@ attach.Sens.slopes_get.DF.output <- function(
     } else {
 
         colnames.non.values <- c('DGUID','dim1','dim2');
+
+        integer.years <- as.integer(setdiff(colnames(DF.input),colnames.non.values));
+
+        cat("\nstr(integer.years)\n");
+        print( str(integer.years)   );
+        cat("\ninteger.years\n");
+        print( integer.years   );
+
+        min.year <- min(integer.years);
+        max.year <- max(integer.years);
+
+        cat("\nc(min.year,max.year)\n");
+        print( c(min.year,max.year)   );
+
         DF.output <- as.data.frame(t(apply(
             X      = DF.input[,setdiff(colnames(DF.input),colnames.non.values)],
             MARGIN = 1,
-            FUN    = single.time.series.analysis
+            FUN    = function(x) {
+                return(single.time.series.analysis(
+                    x        = x,
+                    min.year = min.year,
+                    max.year = max.year
+                    ));
+                }
             )));
         colnames.Sens.slopes <- colnames(DF.output);
         DF.output[,'DGUID']  <- rownames(DF.output);
