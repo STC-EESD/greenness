@@ -119,7 +119,7 @@ permutation.test.Sens.slope_histogram <- function(
             paste0("n.permutations = ",n.permutations),
             paste0("p-value (one-sided) = ",p.value)
             ),
-        x     = temp.xmax * 0.7 * c(1,1),
+        x     = temp.xmax * 0.5 * c(1,1),
         y     = temp.ymax * c(0.98,0.91),
         size  = 15,
         color = "black"
