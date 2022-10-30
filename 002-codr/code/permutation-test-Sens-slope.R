@@ -121,7 +121,7 @@ permutation.test.Sens.slope_histogram <- function(
             ),
         x     = temp.xmax * 0.5 * c(1,1),
         y     = temp.ymax * c(0.98,0.91),
-        size  = 15,
+        size  = 13,
         color = "black"
         );
 
