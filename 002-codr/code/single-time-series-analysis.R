@@ -13,7 +13,7 @@ single.time.series.analysis <- function(
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if( any(is.na(x)) ) {
 
-        output.vector <- rep(x = NA, times = 3 + 1 + 4 + 4 + 7);
+        output.vector <- rep(x = NA, times = 3 + 1 + 4 + 5 + 7);
 
     } else {
 
@@ -40,6 +40,7 @@ single.time.series.analysis <- function(
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         results.trend.sens.slope <- trend::sens.slope(x = temp.ts);
+        results.trend.mk.test    <- trend::mk.test(x = temp.ts, alternative = "two.sided");
 
         ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
         results.litteR.theil_sen <- litteR::theil_sen(x = DF.temp$year, y = DF.temp$value);
@@ -87,6 +88,8 @@ single.time.series.analysis <- function(
 
             trend.slope    = results.trend.sens.slope[['estimates']],
             trend.slope.pv = results.trend.sens.slope[['p.value'  ]],
+            trend.mkt.pv   = results.trend.mk.test[[   'p.value'  ]],
+
             trend.slope.lb = results.trend.sens.slope[['conf.int']][1],
             trend.slope.ub = results.trend.sens.slope[['conf.int']][2],
             # trend.zstat  = results.trend.sens.slope[['statistic']],
@@ -132,6 +135,7 @@ single.time.series.analysis <- function(
 
         "trend.slope",
         "trend.slope.pv",
+        "trend.mkt.pv",
         "trend.slope.lb",
         "trend.slope.ub",
 
