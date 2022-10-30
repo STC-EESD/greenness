@@ -54,6 +54,16 @@ permutation.test.Sens.slope <- function(
     print( sum( permuted.Sens.slopes < observed.Sens.slope )   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    permutation.test.Sens.slope_histogram(
+        DGUID = DGUID.to.test,
+        observed.Sens.slope = observed.Sens.slope,
+        DF.permuted = data.frame(
+            index = seq(1,length(permuted.Sens.slopes)),
+            slope = permuted.Sens.slopes
+            )
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n# ",thisFunctionName,"() exits."));
     cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
     return( list.output );
@@ -61,3 +71,68 @@ permutation.test.Sens.slope <- function(
     }
 
 ##################################################
+permutation.test.Sens.slope_histogram <- function(
+    DGUID               = NULL,
+    observed.Sens.slope = NULL,
+    DF.permuted         = NULL,
+    bin.width           = 1e-5,
+    limits              = 3e-3 * c(-1,1),
+    breaks              = seq(-3e-3,3e-3,1e-3),
+    PNG.output          = "plot-histogram-permutation-test-Sens-slope.png"
+    ) {
+
+    my.ggplot <- initializePlot(title = NULL, subtitle = DGUID);
+    my.ggplot <- my.ggplot + geom_vline(
+        xintercept = observed.Sens.slope,
+        colour     = "orange",
+        size       = 1.00
+        );
+    my.ggplot <- my.ggplot + geom_histogram(
+        data     = DF.permuted,
+        mapping  = aes(x = slope),
+        binwidth = bin.width,
+        alpha    = 0.5
+        # fill     = "black",
+        # colour   = NULL
+        );
+    my.ggplot <- my.ggplot + scale_x_continuous(
+        limits = limits,
+        breaks = breaks
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    permuted.Sens.slopes <- as.numeric(DF.permuted[,'slope']);
+
+    n.more.extrems <- sum( permuted.Sens.slopes < observed.Sens.slope );
+    n.permutations <- nrow(DF.permuted);
+
+    p.value <- n.more.extrems / n.permutations;
+    p.value <- format(p.value, digits = 3, scientific = TRUE);
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    temp.xmax <- max(layer_scales(my.ggplot,i=1L,j=1L)[['x']]$get_limits());
+    temp.ymax <- max(layer_scales(my.ggplot,i=1L,j=1L)[['y']]$get_limits());
+
+    my.ggplot <- my.ggplot + annotate(
+        geom  = "text",
+        label = c(
+            paste0("n.permutations = ",n.permutations),
+            paste0("p-value (one-sided) = ",p.value)
+            ),
+        x     = temp.xmax * 0.7 * c(1,1),
+        y     = temp.ymax * c(0.98,0.91),
+        size  = 15,
+        color = "black"
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    ggplot2::ggsave(
+        file   = PNG.output,
+        plot   = my.ggplot,
+        dpi    = 300,
+        height =  12,
+        width  =  20,
+        units  = 'in'
+        );
+
+    }
