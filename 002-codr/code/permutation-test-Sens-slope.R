@@ -107,7 +107,7 @@ permutation.test.Sens.slope_histogram <- function(
     n.permutations <- nrow(DF.permuted);
 
     p.value <- n.more.extrems / n.permutations;
-    p.value <- format(p.value, digits = 3, scientific = TRUE);
+    p.value <- format(p.value, digits = 4, scientific = TRUE);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     temp.xmax <- max(layer_scales(my.ggplot,i=1L,j=1L)[['x']]$get_limits());
