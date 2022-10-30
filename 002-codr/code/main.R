@@ -83,7 +83,7 @@ visualize.Sens.slopes(
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-permutation.test.Sens.slope(
+LIST.output <- permutation.test.Sens.slope(
     DF.input       = DF.ndvi.Sens.slope,
     DGUID.to.test  = '2021C151005',
     n.permutations = 1000L
