@@ -18,8 +18,8 @@ setwd( output.directory );
 ##################################################
 require(arrow);
 require(deming);
-require(fda);
 require(ggplot2);
+require(gtools);
 require(litteR);
 require(mblm);
 require(stringr);
@@ -31,6 +31,7 @@ code.files <- c(
     "attach-Sens-slopes.R",
     "getData-greenness-ndvi.R",
     "initializePlot.R",
+    "permutation-test-Sens-slope.R",
     "single-time-series-analysis.R",
     "visualize-Sens-slopes.R"
     # "attach-sampling.R",
@@ -80,6 +81,15 @@ visualize.Sens.slopes(
     DF.input       = DF.ndvi.Sens.slope,
     DGUIDs.to.plot = c('2021C151005','2021C151004','2021C151003','2021C151002')
     );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+permutation.test.Sens.slope(
+    DF.input       = DF.ndvi.Sens.slope,
+    DGUID.to.test  = '2021C151005',
+    n.permutations = 1000L
+    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
 ##################################################
 print( warnings() );
