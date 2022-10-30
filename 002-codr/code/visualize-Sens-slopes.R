@@ -130,7 +130,7 @@ visualize.Sens.slopes_time.plot <- function(
     temp.subtitle <- paste0(
         "Sen's slope = ", temp.slope,", ",
         "CI(slope) = (",  temp.slope.lb,", ",temp.slope.ub,"), ",
-        "pval(slope) = ", temp.slope.pv,", ",
+        "pval(MK) = ",    temp.slope.pv,", ",
         "R2 = ",          temp.R2,", ",
         "sum.sqs = ",     temp.sum.sqs,", ",
         "sum.sqs.0 = ",   temp.sum.sqs.0
