@@ -177,7 +177,7 @@ collateData_read.greenness <- function(
         }
 
     DF.output[,'PctGreenness'] <- 100 * DF.output[,'VALUE_2'] / (DF.output[,'VALUE_1'] + DF.output[,'VALUE_2']);
-    DF.output[,'PctGreenness'] <- base::round(x = DF.output[,'PctGreenness'], digits = 1 + 3);
+    # DF.output[,'PctGreenness'] <- base::round(x = DF.output[,'PctGreenness'], digits = 1 + 3);
 
     colnames.retained <- setdiff(colnames(DF.output),c('VALUE_1','VALUE_2'));
     DF.output <- DF.output[,colnames.retained];
@@ -239,7 +239,7 @@ collateData_read.ndvi <- function(
     DF.output[,'Year' ] <- as.character(           DF.output[,'Year' ] );
 
     DF.output[,'AvNDVI'] <- (DF.output[,'MEAN'] - 10000) / 10000;
-    DF.output[,'AvNDVI'] <- base::round(x = DF.output[,'AvNDVI'], digits = 4 + 3);
+    # DF.output[,'AvNDVI'] <- base::round(x = DF.output[,'AvNDVI'], digits = 4 + 3);
 
     colnames.retained <- setdiff(colnames(DF.output),c('MEAN'));
     DF.output <- DF.output[,colnames.retained];
