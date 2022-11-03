@@ -142,11 +142,18 @@ getData.greenness.ndvi_read <- function(
     print( DF.output[is.na(DF.output[,'dim1']),]   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    DF.long <- DF.wide %>% tidyr::gather(
-        key   = "ReferencePeriod",
-        value = "Value",
-        vector.years
+    # DF.long <- DF.wide %>% tidyr::gather(
+    #     key   = "ReferencePeriod",
+    #     value = "Value",
+    #     vector.years
+    #     );
+
+    DF.long <- DF.wide %>% tidyr::pivot_longer(
+        cols      = all_of(vector.years),
+        names_to  = "ReferencePeriod",
+        values_to = "Value"
         );
+    DF.long <- as.data.frame(DF.long);
 
     cat("\nstr(DF.long)\n");
     print( str(DF.long)   );
@@ -159,6 +166,7 @@ getData.greenness.ndvi_read <- function(
         y = DF.long,
         by = c('ReferencePeriod','dim1')
         );
+    DF.output <- as.data.frame(DF.output);
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.output[,"ReferencePeriod"] <- paste0(DF.output[,"ReferencePeriod"],"0101");
