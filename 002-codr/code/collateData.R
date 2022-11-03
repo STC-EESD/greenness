@@ -100,7 +100,7 @@ collateData <- function(
                 X      = DF.output[,years],
                 MARGIN = 1,
                 FUN    = function(x) {return(
-                    all( is.na(x) | (x == 0) )
+                    all( is.na(x) | (abs(x) < 2e-5) )
                     )}
                 );
             DF.output[is.NA.or.zero,years] <- NA;

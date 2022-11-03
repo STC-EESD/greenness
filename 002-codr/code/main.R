@@ -95,23 +95,24 @@ DF.greeness.ndvi <- getData.greenness.ndvi(
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# data.snapshot <- "2022-10-28.01";
-# LIST.input <- list(
-#     greenness = list(
-#         file     = file.path(data.directory,data.snapshot,"Greenness_All_2022.csv"),
-#         dim2     = 1L,
-#         n.digits = 1L
-#         ),
-#     ndvi = list(
-#         file     = file.path(data.directory,data.snapshot,"AverageNDVI_All_2022.csv"),
-#         dim2     = 2L,
-#         n.digits = 4L
-#         )
-#     );
-#
-# DF.greeness.ndvi <- getData.greenness.ndvi(
-#     LIST.input = LIST.input
-#     );
+data.snapshot <- "2022-10-28.01";
+LIST.input <- list(
+    greenness = list(
+        file     = file.path(data.directory,data.snapshot,"Greenness_All_2022.csv"),
+        dim2     = 1L,
+        n.digits = 1L
+        ),
+    ndvi = list(
+        file     = file.path(data.directory,data.snapshot,"AverageNDVI_All_2022.csv"),
+        dim2     = 2L,
+        n.digits = 4L
+        )
+    );
+
+DF.greeness.ndvi <- getData.greenness.ndvi(
+    LIST.input = LIST.input,
+    CSV.output = "DF-CODR-greenness-ndvi-OLD.csv"
+    );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 # DF.ndvi.Sens.slope <- attach.Sens.slopes(
