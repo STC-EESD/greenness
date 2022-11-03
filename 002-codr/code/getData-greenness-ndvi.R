@@ -180,7 +180,7 @@ getData.greenness.ndvi_read <- function(
     DF.output[is.na(DF.output[,"Value"]),"Status"] <- 1L;
 
     DF.output[,"Value"] <- (10^integer.n.digits) * round(
-        x      = DF.output[,"Value"], # + 1e-6
+        x      = DF.output[,"Value"], # + 1e-6,
         digits = integer.n.digits
         );
     DF.output[,"Value"] <- as.character(DF.output[,"Value"]);
