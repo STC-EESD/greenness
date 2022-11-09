@@ -16,14 +16,7 @@ start.proc.time <- proc.time();
 setwd( output.directory );
 
 ##################################################
-require(arrow);
-require(deming);
-require(foreign);
-require(ggplot2);
-require(gtools);
-require(litteR);
-require(mblm);
-require(stringr);
+require(dplyr);
 require(tidyr);
 
 # source supporting R code
