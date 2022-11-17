@@ -50,9 +50,14 @@ cat(paste0("\n# n.cores = ",n.cores,"\n"));
 data.snapshot <- "2022-11-17.01";
 
 CSV.upload <- "38100158_original.csv";
-CSV.codr   <- "38100158_eng.csv";
 
+CSV.codr     <- "38100158_eng.csv";
+sep.codr     <- ',';
 colname.name <- 'NAME_ENG';
+
+# CSV.codr     <- "38100158_fra.csv";
+# sep.codr     <- ';';
+# colname.name <- 'NAME_FRA';
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.No.DGUIDs <- base::as.data.frame(readxl::read_excel(
@@ -74,6 +79,30 @@ colnames(DF.DGUID.dim1) <- gsub(
     replacement = "dim1"
     );
 
+DF.DGUID.dim1[,'NAME_FRA'] <- gsub(
+    x           = DF.DGUID.dim1[,'NAME_FRA'],
+    pattern     = "les grand centres de population urbain",
+    replacement = "les grands centres de population urbains"
+    );
+
+DF.DGUID.dim1[,'NAME_FRA'] <- gsub(
+    x           = DF.DGUID.dim1[,'NAME_FRA'],
+    pattern     = "les grand centres de population",
+    replacement = "les grands centres de population"
+    );
+
+DF.DGUID.dim1[,'NAME_FRA'] <- gsub(
+    x           = DF.DGUID.dim1[,'NAME_FRA'],
+    pattern     = "les moyen centres de population",
+    replacement = "les moyens centres de population"
+    );
+
+DF.DGUID.dim1[,'NAME_FRA'] <- gsub(
+    x           = DF.DGUID.dim1[,'NAME_FRA'],
+    pattern     = "les petit centres de population",
+    replacement = "les petits centres de population"
+    );
+
 print( str(DF.DGUID.dim1) );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -93,7 +122,46 @@ length(setdiff(No.DGUIDs,unique(DF.upload[,'DGUID'])));
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.codr <- read.csv(
     file = file.path(data.directory,data.snapshot,CSV.codr),
+    sep  = sep.codr
     );
+print(str(DF.codr));
+
+colnames(DF.codr) <- gsub(
+    x           = colnames(DF.codr),
+    pattern     = "PÉRIODE.DE.RÉFÉRENCE",
+    replacement = "REF_DATE"
+    );
+
+colnames(DF.codr) <- gsub(
+    x           = colnames(DF.codr),
+    pattern     = "GÉO",
+    replacement = "GEO"
+    );
+
+colnames(DF.codr) <- gsub(
+    x           = colnames(DF.codr),
+    pattern     = "Verdure.urbaine",
+    replacement = "Urban.greenness"
+    );
+
+colnames(DF.codr) <- gsub(
+    x           = colnames(DF.codr),
+    pattern     = "VALEUR",
+    replacement = "VALUE"
+    );
+
+colnames(DF.codr) <- gsub(
+    x           = colnames(DF.codr),
+    pattern     = "DÉCIMALES",
+    replacement = "DECIMALS"
+    );
+
+DF.codr[,'Urban.greenness'] <- gsub(
+    x           = DF.codr[,'Urban.greenness'],
+    pattern     = "Verdure moyenne",
+    replacement = "Average greenness"
+    );
+
 print(str(DF.codr));
 
 # row.index.warning <- which(grepl(x = DF.codr[,'REF_DATE'], pattern = "warning", ignore.case = TRUE));
@@ -114,7 +182,7 @@ setdiff(DGUIDs.NA.codr,No.DGUIDs);
 setdiff(No.DGUIDs,DGUIDs.NA.codr);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-DF.codr[DF.codr[,'DGUID'] %in% No.DGUIDs,"DGUID"] <- "";
+# DF.codr[DF.codr[,'DGUID'] %in% No.DGUIDs,"DGUID"] <- "";
 # DF.codr <- DF.codr[DF.codr[,'DGUID'] != "",];
 
 write.csv(
@@ -140,10 +208,13 @@ DF.codr <- dplyr::left_join(
     by = 'GEO'
     );
 
+is.selected <- is.na(DF.codr[,'DGUID']) | (DF.codr[,'DGUID'] == "");
+# is.selected <- is.na(DF.codr[,'GEO']) | (DF.codr[,'GEO'] == "");
+print( unique(DF.codr[is.selected,c('GEO','DGUID','DGUID.replacement')]) );
+
 is.missing.DGUID <- (DF.codr[,'DGUID'] == "");
 DF.codr[is.missing.DGUID,'DGUID'] <- DF.codr[is.missing.DGUID,'DGUID.replacement'];
-
-print( str(DF.codr) );
+DF.codr <- unique(DF.codr[,c('REF_DATE','DGUID','Urban.greenness','VALUE','DECIMALS')]);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 print( str(DF.upload) );
