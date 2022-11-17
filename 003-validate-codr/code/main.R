@@ -47,7 +47,12 @@ cat(paste0("\n# n.cores = ",n.cores,"\n"));
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 # data.snapshot <- "2022-11-09.01";
-data.snapshot <- "2022-11-16.01";
+data.snapshot <- "2022-11-17.01";
+
+CSV.upload <- "38100158_original.csv";
+CSV.codr   <- "38100158_eng.csv";
+
+colname.name <- 'NAME_ENG';
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.No.DGUIDs <- base::as.data.frame(readxl::read_excel(
@@ -68,13 +73,12 @@ colnames(DF.DGUID.dim1) <- gsub(
     pattern     = "Dim1",
     replacement = "dim1"
     );
-DF.DGUID.dim1 <- DF.DGUID.dim1[,c('DGUID','dim1')];
 
 print( str(DF.DGUID.dim1) );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.upload <- read.csv(
-    file = file.path(data.directory,data.snapshot,"38100158_data.csv"),
+    file = file.path(data.directory,data.snapshot,CSV.upload),
     );
 DF.upload <- dplyr::left_join(
     x  = DF.upload,
@@ -87,17 +91,16 @@ length(setdiff(unique(DF.upload[,'DGUID']),No.DGUIDs));
 length(setdiff(No.DGUIDs,unique(DF.upload[,'DGUID'])));
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-CSV.codr <- "38100158_2000-01-01_2022-01-01.csv";
 DF.codr <- read.csv(
     file = file.path(data.directory,data.snapshot,CSV.codr),
     );
 print(str(DF.codr));
 
-row.index.warning <- which(grepl(x = DF.codr[,'REF_DATE'], pattern = "warning", ignore.case = TRUE));
-print(row.index.warning);
-
-str( DF.codr[seq(row.index.warning,nrow(DF.codr)),] );
-DF.codr <- DF.codr[seq(1,row.index.warning-1),];
+# row.index.warning <- which(grepl(x = DF.codr[,'REF_DATE'], pattern = "warning", ignore.case = TRUE));
+# print(row.index.warning);
+#
+# str( DF.codr[seq(row.index.warning,nrow(DF.codr)),] );
+# DF.codr <- DF.codr[seq(1,row.index.warning-1),];
 
 length(setdiff(unique(DF.codr[,'DGUID']),No.DGUIDs));
 length(setdiff(No.DGUIDs,unique(DF.codr[,'DGUID'])));
@@ -112,12 +115,35 @@ setdiff(No.DGUIDs,DGUIDs.NA.codr);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.codr[DF.codr[,'DGUID'] %in% No.DGUIDs,"DGUID"] <- "";
-DF.codr <- DF.codr[DF.codr[,'DGUID'] != "",];
+# DF.codr <- DF.codr[DF.codr[,'DGUID'] != "",];
 
 write.csv(
     file = gsub(x = CSV.codr, pattern = "\\.csv", replacement = "-NO-DGUIDs.csv"),
     x    = DF.codr
     );
+
+DF.temp <- DF.DGUID.dim1[,c('DGUID',colname.name)];
+colnames(DF.temp) <- gsub(
+    x           = colnames(DF.temp),
+    pattern     = colname.name,
+    replacement = "GEO"
+    );
+colnames(DF.temp) <- gsub(
+    x           = colnames(DF.temp),
+    pattern     = "DGUID",
+    replacement = "DGUID.replacement"
+    );
+
+DF.codr <- dplyr::left_join(
+    x  = DF.codr,
+    y  = DF.temp[,c('GEO','DGUID.replacement')],
+    by = 'GEO'
+    );
+
+is.missing.DGUID <- (DF.codr[,'DGUID'] == "");
+DF.codr[is.missing.DGUID,'DGUID'] <- DF.codr[is.missing.DGUID,'DGUID.replacement'];
+
+print( str(DF.codr) );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 print( str(DF.upload) );
