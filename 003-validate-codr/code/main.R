@@ -116,7 +116,7 @@ DF.codr <- DF.codr[DF.codr[,'DGUID'] != "",];
 
 write.csv(
     file = gsub(x = CSV.codr, pattern = "\\.csv", replacement = "-NO-DGUIDs.csv"),
-    x    = DF.codr[DF.codr[,'DGUID'] == "",]
+    x    = DF.codr
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
