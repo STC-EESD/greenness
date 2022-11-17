@@ -87,8 +87,9 @@ length(setdiff(unique(DF.upload[,'DGUID']),No.DGUIDs));
 length(setdiff(No.DGUIDs,unique(DF.upload[,'DGUID'])));
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+CSV.codr <- "38100158_2000-01-01_2022-01-01.csv";
 DF.codr <- read.csv(
-    file = file.path(data.directory,data.snapshot,"38100158_2000-01-01_2022-01-01.csv"),
+    file = file.path(data.directory,data.snapshot,CSV.codr),
     );
 print(str(DF.codr));
 
@@ -110,8 +111,13 @@ setdiff(DGUIDs.NA.codr,No.DGUIDs);
 setdiff(No.DGUIDs,DGUIDs.NA.codr);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-#DF.codr[DF.codr[,'DGUID'] %in% No.DGUIDs,"DGUID"] <- "";
-#DF.codr <- DF.codr[DF.codr[,'DGUID'] != "",];
+DF.codr[DF.codr[,'DGUID'] %in% No.DGUIDs,"DGUID"] <- "";
+DF.codr <- DF.codr[DF.codr[,'DGUID'] != "",];
+
+write.csv(
+    file = gsub(x = CSV.codr, pattern = "\\.csv", replacement = "-NO-DGUIDs.csv"),
+    x    = DF.codr[DF.codr[,'DGUID'] == "",]
+    );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 print( str(DF.upload) );
