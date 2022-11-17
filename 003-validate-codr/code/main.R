@@ -46,7 +46,17 @@ n.cores   <- ifelse(test = is.macOS, yes = 2, no = parallel::detectCores() - 1);
 cat(paste0("\n# n.cores = ",n.cores,"\n"));
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-data.snapshot <- "2022-11-09.01";
+# data.snapshot <- "2022-11-09.01";
+data.snapshot <- "2022-11-16.01";
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+DF.No.DGUIDs <- base::as.data.frame(readxl::read_excel(
+    path  = file.path(data.directory,data.snapshot,"Dim1_DGUID_Relationship.xlsx"),
+    sheet = "No_DGUIDs"
+    ));
+No.DGUIDs <- unique(DF.No.DGUIDs[,'DGUID']);
+print( str(DF.No.DGUIDs) );
+print( No.DGUIDs );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.DGUID.dim1 <- base::as.data.frame(readxl::read_excel(
@@ -59,6 +69,7 @@ colnames(DF.DGUID.dim1) <- gsub(
     replacement = "dim1"
     );
 DF.DGUID.dim1 <- DF.DGUID.dim1[,c('DGUID','dim1')];
+
 print( str(DF.DGUID.dim1) );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -72,24 +83,55 @@ DF.upload <- dplyr::left_join(
     );
 DF.upload[,'ReferencePeriod'] <- as.character(DF.upload[,'ReferencePeriod']);
 
+length(setdiff(unique(DF.upload[,'DGUID']),No.DGUIDs));
+length(setdiff(No.DGUIDs,unique(DF.upload[,'DGUID'])));
+
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.codr <- read.csv(
     file = file.path(data.directory,data.snapshot,"38100158_2000-01-01_2022-01-01.csv"),
     );
-str( DF.codr[DF.codr[,'DGUID'] == "",] );
-DF.codr <- DF.codr[DF.codr[,'DGUID'] != "",]
+print(str(DF.codr));
+
+row.index.warning <- which(grepl(x = DF.codr[,'REF_DATE'], pattern = "warning", ignore.case = TRUE));
+print(row.index.warning);
+
+str( DF.codr[seq(row.index.warning,nrow(DF.codr)),] );
+DF.codr <- DF.codr[seq(1,row.index.warning-1),];
+
+length(setdiff(unique(DF.codr[,'DGUID']),No.DGUIDs));
+length(setdiff(No.DGUIDs,unique(DF.codr[,'DGUID'])));
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+length(unique(DF.codr[DF.codr[,'DGUID'] %in% No.DGUIDs,"DGUID"]));
+
+DGUIDs.NA.codr <- unique(DF.codr[is.na(DF.codr[,"VALUE"]),"DGUID"]);
+
+setdiff(DGUIDs.NA.codr,No.DGUIDs);
+setdiff(No.DGUIDs,DGUIDs.NA.codr);
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+#DF.codr[DF.codr[,'DGUID'] %in% No.DGUIDs,"DGUID"] <- "";
+#DF.codr <- DF.codr[DF.codr[,'DGUID'] != "",];
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 print( str(DF.upload) );
-print( str(DF.codr) );
+print( str(DF.codr  ) );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-DGUIDs.NA.uplaod <- DF.upload[is.na(DF.upload[,"Value"]),"DGUID"];
-DGUIDs.NA.codr   <- DF.codr[  is.na(DF.codr[,  "VALUE"]),"DGUID"];
+DGUIDs.NA.uplaod <- unique(DF.upload[is.na(DF.upload[,"Value"]),"DGUID"]);
+DGUIDs.NA.codr   <- unique(DF.codr[  is.na(DF.codr[,  "VALUE"]),"DGUID"]);
 
-setdiff(DGUIDs.NA.uplaod,DGUIDs.NA.codr);
+length(DGUIDs.NA.uplaod);
+length(DGUIDs.NA.codr  );
 
 setdiff(DGUIDs.NA.codr,DGUIDs.NA.uplaod);
+setdiff(DGUIDs.NA.uplaod,DGUIDs.NA.codr);
+
+setdiff(DGUIDs.NA.codr,No.DGUIDs);
+setdiff(No.DGUIDs,DGUIDs.NA.codr);
+
+setdiff(DGUIDs.NA.uplaod,No.DGUIDs);
+setdiff(No.DGUIDs,DGUIDs.NA.uplaod);
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.check <- DF.codr[,c('REF_DATE','DGUID','Urban.greenness','VALUE','DECIMALS')];
@@ -128,6 +170,10 @@ DF.check[,'diff'] <- abs(DF.check[,'value.codr.check'] - DF.check[,'value.upload
 print( summary(DF.check[!is.na(DF.check[,'value.codr']),'diff']) );
 
 print( summary(DF.check[ is.na(DF.check[,'value.codr']),]) );
+
+temp.DGUIDs <- unique(DF.check[is.na(DF.check[,'value.codr']),'DGUID']);
+setdiff(temp.DGUIDs,No.DGUIDs);
+setdiff(No.DGUIDs,temp.DGUIDs);
 
 ##################################################
 print( warnings() );
