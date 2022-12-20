@@ -18,6 +18,8 @@ setwd( output.directory );
 ##################################################
 require(dplyr);
 require(tidyr);
+require(sf);
+require(tmap);
 
 # source supporting R code
 code.files <- c(
@@ -143,6 +145,49 @@ print( summary(DF.check[ is.na(DF.check[,'value.codr']),]) );
 temp.DGUIDs <- unique(DF.check[is.na(DF.check[,'value.codr']),'DGUID']);
 setdiff(temp.DGUIDs,No.DGUIDs);
 setdiff(No.DGUIDs,temp.DGUIDs);
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+data.snapshot <- "2022-12-19.01";
+
+SF.boundaries <- sf::st_read(
+    dsn = file.path(data.directory,data.snapshot,"lpc_000b21a_e","lpc_000b21a_e.shp")
+    );
+SF.boundaries[,'area'] <- sf::st_area(sf::st_geometry(SF.boundaries));
+cat("\nstr(SF.boundaries)\n");
+print( str(SF.boundaries)   );
+
+SF.centroids <- SF.boundaries;
+sf::st_geometry(SF.centroids) <- sf::st_centroid(sf::st_geometry(SF.boundaries));
+cat("\nstr(SF.centroids)\n");
+print( str(SF.centroids)   );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+SHP.canada <- sf::st_read(
+    dsn = file.path(data.directory,data.snapshot,"lpr_000a21a_e","lpr_000a21a_e.shp")
+    );
+cat("\nstr(SHP.canada)\n");
+print( str(SHP.canada)   );
+
+my.tmap <- tmap::tm_shape(SHP.canada) + tmap::tm_borders();
+my.tmap <- my.tmap + tmap::tm_shape(SF.centroids) + tmap::tm_dots(
+    size  = "area",
+    col   = "orange",
+    alpha = 0.5
+    );
+
+cat("\nstr(my.tmap)\n");
+print( str(my.tmap)   );
+
+tmap::tmap_save(
+    tm       = my.tmap,
+    filename = "map-canada.png",
+    width    = 16,
+    # height =  8,
+    units    = "in",
+    dpi      = 300
+    );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 
 ##################################################
 print( warnings() );
