@@ -171,30 +171,32 @@ cat("\nstr(SHP.canada)\n");
 print( str(SHP.canada)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# my.tmap <- tmap::tm_shape(SHP.canada) + tmap::tm_borders();
-# my.tmap <- my.tmap + tmap::tm_shape(SF.centroids) + tmap::tm_dots(
-#     size  = "area",
-#     col   = "orange",
-#     alpha = 0.5
-#     );
-#
-# cat("\nstr(my.tmap)\n");
-# print( str(my.tmap)   );
-#
-# tmap::tmap_save(
-#     tm       = my.tmap,
-#     filename = "tmap-canada.png",
-#     width    = 16,
-#     # height =  8,
-#     units    = "in",
-#     dpi      = 300
-#     );
-#
+my.tmap <- tmap::tm_shape(SHP.canada) + tmap::tm_borders();
+my.tmap <- my.tmap + tmap::tm_shape(SF.centroids) + tmap::tm_dots(
+    size  = "area",
+    col   = "orange",
+    alpha = 0.5
+    );
+
+cat("\nstr(my.tmap)\n");
+print( str(my.tmap)   );
+
+tmap::tmap_save(
+    tm       = my.tmap,
+    filename = "tmap-canada.png",
+    width    = 16,
+    # height =  8,
+    units    = "in",
+    dpi      = 300
+    );
+
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 my.ggplot <- initializePlot();
 my.ggplot <- my.ggplot + ggplot2::geom_sf(
-    data    = SHP.canada
-    # mapping = aes(colour = "black", fill = NA)
+    data   = SHP.canada,
+    colour = "black",
+    size   = 1.1,
+    fill   = NA
     );
 my.ggplot <- my.ggplot + ggplot2::geom_sf(
     data    = SF.centroids,
