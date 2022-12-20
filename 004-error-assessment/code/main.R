@@ -195,7 +195,7 @@ my.ggplot <- initializePlot();
 my.ggplot <- my.ggplot + ggplot2::geom_sf(
     data   = SHP.canada,
     colour = "black",
-    size   = 1.1,
+    size   = 0.9,
     fill   = NA
     );
 my.ggplot <- my.ggplot + ggplot2::geom_sf(
