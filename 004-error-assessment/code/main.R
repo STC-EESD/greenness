@@ -157,11 +157,15 @@ SF.boundaries <- sf::st_read(
 SF.boundaries[,'area'] <- as.numeric(sf::st_area(sf::st_geometry(SF.boundaries))) / 1e6;
 cat("\nstr(SF.boundaries)\n");
 print( str(SF.boundaries)   );
+cat("\nsummary(SF.boundaries)\n");
+print( summary(SF.boundaries)   );
 
 SF.centroids <- SF.boundaries;
 sf::st_geometry(SF.centroids) <- sf::st_centroid(sf::st_geometry(SF.boundaries));
 cat("\nstr(SF.centroids)\n");
 print( str(SF.centroids)   );
+cat("\nsummary(SF.centroids)\n");
+print( summary(SF.centroids)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 SHP.canada <- sf::st_read(
@@ -204,6 +208,7 @@ my.ggplot <- my.ggplot + ggplot2::geom_sf(
     color   = "orange",
     alpha   = 0.5
     );
+# my.ggplot <- my.ggplot + ggplot2::scale_size_continuous(range = c(1^2, 2000^2));
 
 ggplot2::ggsave(
     plot     = my.ggplot,
