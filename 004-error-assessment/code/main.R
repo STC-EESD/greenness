@@ -17,20 +17,22 @@ setwd( output.directory );
 
 ##################################################
 require(dplyr);
-require(tidyr);
+require(ggplot2);
 require(sf);
+require(tidyr);
 require(tmap);
+require(units);
 
 # source supporting R code
 code.files <- c(
     "get-DF-check.R",
     "getData-codr.R",
     "getData-DGUID-dim1.R",
-    "getData-upload.R"
+    "getData-upload.R",
+    "initializePlot.R"
     # "attach-Sens-slopes.R",
     # "collateData.R",
     # "getData-greenness-ndvi.R",
-    # "initializePlot.R",
     # "permutation-test-Sens-slope.R",
     # "single-time-series-analysis.R",
     # "visualize-Sens-slopes.R"
@@ -152,7 +154,7 @@ data.snapshot <- "2022-12-19.01";
 SF.boundaries <- sf::st_read(
     dsn = file.path(data.directory,data.snapshot,"lpc_000b21a_e","lpc_000b21a_e.shp")
     );
-SF.boundaries[,'area'] <- sf::st_area(sf::st_geometry(SF.boundaries));
+SF.boundaries[,'area'] <- as.numeric(sf::st_area(sf::st_geometry(SF.boundaries))) / 1e6;
 cat("\nstr(SF.boundaries)\n");
 print( str(SF.boundaries)   );
 
@@ -168,21 +170,44 @@ SHP.canada <- sf::st_read(
 cat("\nstr(SHP.canada)\n");
 print( str(SHP.canada)   );
 
-my.tmap <- tmap::tm_shape(SHP.canada) + tmap::tm_borders();
-my.tmap <- my.tmap + tmap::tm_shape(SF.centroids) + tmap::tm_dots(
-    size  = "area",
-    col   = "orange",
-    alpha = 0.5
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+# my.tmap <- tmap::tm_shape(SHP.canada) + tmap::tm_borders();
+# my.tmap <- my.tmap + tmap::tm_shape(SF.centroids) + tmap::tm_dots(
+#     size  = "area",
+#     col   = "orange",
+#     alpha = 0.5
+#     );
+#
+# cat("\nstr(my.tmap)\n");
+# print( str(my.tmap)   );
+#
+# tmap::tmap_save(
+#     tm       = my.tmap,
+#     filename = "tmap-canada.png",
+#     width    = 16,
+#     # height =  8,
+#     units    = "in",
+#     dpi      = 300
+#     );
+#
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+my.ggplot <- initializePlot();
+my.ggplot <- my.ggplot + ggplot2::geom_sf(
+    data    = SHP.canada
+    # mapping = aes(colour = "black", fill = NA)
+    );
+my.ggplot <- my.ggplot + ggplot2::geom_sf(
+    data    = SF.centroids,
+    mapping = aes(geometry = geometry, size = area),
+    color   = "orange",
+    alpha   = 0.5
     );
 
-cat("\nstr(my.tmap)\n");
-print( str(my.tmap)   );
-
-tmap::tmap_save(
-    tm       = my.tmap,
-    filename = "map-canada.png",
+ggplot2::ggsave(
+    plot     = my.ggplot,
+    filename = "ggplot2-canada.png",
     width    = 16,
-    # height =  8,
+    height   = 16,
     units    = "in",
     dpi      = 300
     );
