@@ -1,7 +1,8 @@
 
 getData.DGUID.dim1 <- function(
     data.directory = NULL,
-    data.snapshot  = NULL
+    data.snapshot  = NULL,
+    release        = NULL
     ) {
 
     thisFunctionName <- "getData.DGUID.dim1";
@@ -11,7 +12,7 @@ getData.DGUID.dim1 <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.DGUID.dim1 <- base::as.data.frame(readxl::read_excel(
-        path  = file.path(data.directory,data.snapshot,"Dim1_DGUID_Relationship.xlsx"),
+        path  = file.path(data.directory,data.snapshot,release,"Dim1_DGUID_Relationship.xlsx"),
         sheet = "Sheet1"
         ));
     colnames(DF.DGUID.dim1) <- gsub(
