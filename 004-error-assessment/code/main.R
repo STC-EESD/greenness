@@ -25,6 +25,7 @@ require(units);
 
 # source supporting R code
 code.files <- c(
+    "attach-error-columns.R",
     "get-DF-check.R",
     "getData.R",
     "getData-Albers.R",
@@ -116,6 +117,12 @@ DF.master <- getData(
     CSV.Albers.NDVI.10m       = "MODISCOMP7d_2000_2022_Albers_AverageNDVI_10m_v2_PC.csv",
     CSV.Albers.greenness.230m = "MODISCOMP7d_2000_2022_Albers_Greenness_230m_v2_All.csv",
     CSV.Albers.NDVI.230m      = "MODISCOMP7d_2000_2022_Albers_AverageNDVI_230m_v2_All.csv"
+    );
+
+DF.master <- attach.error.columns(
+    DF.input  = DF.master,
+    variables = c('greenness','NDVI'),
+    versions  = c('codr','230m','10m')
     );
 
 print( str(DF.master) );
