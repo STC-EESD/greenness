@@ -200,6 +200,31 @@ getData <- function(
         );
     DF.output <- DF.output[,reordered.colnames];
 
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    colnames.greenness <- paste0("greenness.value.",c(colname.suffix.230m,colname.suffix.10m));
+    for ( temp.colname in colnames.greenness ) {
+        DF.output[,temp.colname] <- apply(
+            X      = DF.output[,c(temp.colname,'greenness.precision')],
+            MARGIN = 1,
+            FUN    = function(x) {
+                round(x = 100.0 * x[1], digits = x[2]);
+                }
+            );
+        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    colnames.NDVI <- paste0("NDVI.value.",c(colname.suffix.230m,colname.suffix.10m));
+    for ( temp.colname in colnames.NDVI ) {
+        DF.output[,temp.colname] <- apply(
+            X      = DF.output[,c(temp.colname,'NDVI.precision')],
+            MARGIN = 1,
+            FUN    = function(x) {
+                round(x = (x[1]/10000.0) - 1.0, digits = x[2]);
+                }
+            );
+        }
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat("\nstr(DF.output)\n");
     print( str(DF.output)   );
 
