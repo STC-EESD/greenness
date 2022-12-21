@@ -108,8 +108,8 @@ getData.Albers <- function(
         'area',
         'n.pixels.grey',
         'n.pixels.green',
-        'greenness',
-        'NDVI'
+        'greenness.value',
+        'NDVI.value'
         );
 
     DF.output <- DF.output[,reordered.colnames];
@@ -162,7 +162,7 @@ getData.Albers_greenness <- function(
         replacement = "n.pixels.green"
         );
 
-    DF.output[,'greenness'] <- DF.output[,'n.pixels.green'] / (DF.output[,'n.pixels.grey'] + DF.output[,'n.pixels.green']);
+    DF.output[,'greenness.value'] <- DF.output[,'n.pixels.green'] / (DF.output[,'n.pixels.grey'] + DF.output[,'n.pixels.green']);
 
     return( DF.output );
 
@@ -201,7 +201,7 @@ getData.Albers_NDVI <- function(
     colnames(DF.Albers.NDVI) <- gsub(
         x           = colnames(DF.Albers.NDVI),
         pattern     = "MEAN",
-        replacement = "NDVI"
+        replacement = "NDVI.value"
         );
 
     return( DF.Albers.NDVI );
