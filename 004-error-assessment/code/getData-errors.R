@@ -24,7 +24,7 @@ getData.errors <- function(
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     if ( file.exists(CSV.output) ) {
-        cat("\nThe output file",CSV.output,"already exists; loading the file ...\n");
+        cat("\nThe output file",CSV.output,"already exists; loading the file ...\n\n");
         DF.output <- read.csv(CSV.output);
         return( DF.output );
         }
