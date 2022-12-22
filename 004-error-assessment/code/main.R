@@ -16,6 +16,7 @@ start.proc.time <- proc.time();
 setwd( output.directory );
 
 ##################################################
+require(cowplot);
 require(dplyr);
 require(ggplot2);
 require(sf);
