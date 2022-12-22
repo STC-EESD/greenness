@@ -27,12 +27,13 @@ require(units);
 code.files <- c(
     "attach-error-columns.R",
     "get-DF-check.R",
-    "getData.R",
+    "getData-errors.R",
     "getData-Albers.R",
     "getData-codr.R",
     "getData-DGUID-dim1.R",
     "getData-upload.R",
-    "initializePlot.R"
+    "initializePlot.R",
+    "summarize-visualize-errors.R"
     # "attach-Sens-slopes.R",
     # "collateData.R",
     # "getData-greenness-ndvi.R",
@@ -106,31 +107,26 @@ colname.DGNAME <- 'NAME_ENG';
 # print( str(DF.Albers.10m)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-DF.master <- getData(
+DF.errors <- getData.errors(
     data.directory = data.directory,
     data.snapshot  = data.snapshot,
     release        = release,
     CSV.codr       = CSV.codr,
     colname.DGNAME = colname.DGNAME,
     sep.codr       = sep.codr,
+    CSV.output     = "DF-errors.csv",
     CSV.Albers.greenness.10m  = "MODISCOMP7d_2000_2022_Albers_Greenness_10m_v2_PC.csv",
     CSV.Albers.NDVI.10m       = "MODISCOMP7d_2000_2022_Albers_AverageNDVI_10m_v2_PC.csv",
     CSV.Albers.greenness.230m = "MODISCOMP7d_2000_2022_Albers_Greenness_230m_v2_All.csv",
     CSV.Albers.NDVI.230m      = "MODISCOMP7d_2000_2022_Albers_AverageNDVI_230m_v2_All.csv"
     );
 
-DF.master <- attach.error.columns(
-    DF.input  = DF.master,
-    variables = c('greenness','NDVI'),
-    versions  = c('codr','230m','10m')
-    );
+cat("\nstr(DF.errors)\n");
+print( str(DF.errors)   );
 
-print( str(DF.master) );
-
-write.csv(
-    file      = "DF-master.csv",
-    x         = DF.master,
-    row.names = FALSE
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+summarize.visualize.errors(
+    DF.errors = DF.errors
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
