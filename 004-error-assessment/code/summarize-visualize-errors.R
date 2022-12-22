@@ -12,9 +12,12 @@ summarize.visualize.errors <- function(
     # summarize.visualize.errors_five.stats(
     #     DF.errors = DF.errors
     #     );
+    #
+    # summarize.visualize.errors_scatter.errors(
+    #     DF.errors = DF.errors
+    #     );
 
-    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    summarize.visualize.errors_scatter.errors(
+    summarize.visualize.errors_density(
         DF.errors = DF.errors
         );
 
@@ -26,6 +29,98 @@ summarize.visualize.errors <- function(
     }
 
 ##################################################
+summarize.visualize.errors_density <- function(
+    DF.errors     = NULL,
+    textsize.axis = 20
+    ) {
+
+    temp.directory <- "plots-density";
+    if ( !dir.exists(temp.directory) ) {
+        dir.create(temp.directory);
+        }
+
+    years <- unique(DF.errors[,'year']);
+    for ( temp.year in years ) {
+
+        DF.temp <- DF.errors[DF.errors[,'year'] == temp.year,];
+
+        temp.title <- paste(temp.year,"Greenness","error",sep = " ");
+        plot.greenness.err <- initializePlot(
+            title    = NULL,
+            subtitle = temp.title
+            );
+        plot.greenness.err <- plot.greenness.err + geom_density(
+            data    = DF.temp,
+            mapping = aes(x = greenness.err.codr.230m),
+            alpha   = 0.5,
+            size    = 0.5
+            );
+
+        temp.title <- paste(temp.year,"Greenness","relative error",sep = " ");
+        plot.greenness.rel.err <- initializePlot(
+            title    = NULL,
+            subtitle = temp.title
+            );
+        plot.greenness.rel.err <- plot.greenness.rel.err + geom_density(
+            data    = DF.temp,
+            mapping = aes(x = greenness.rel.err.codr.230m),
+            alpha   = 0.5,
+            size    = 0.5
+            );
+
+        temp.title <- paste(temp.year,"NDVI","error",sep = " ");
+        plot.NDVI.err <- initializePlot(
+            title    = NULL,
+            subtitle = temp.title
+            );
+        plot.NDVI.err <- plot.NDVI.err + geom_density(
+            data    = DF.temp,
+            mapping = aes(x = NDVI.err.codr.230m),
+            alpha   = 0.5,
+            size    = 0.5
+            );
+
+        temp.title <- paste(temp.year,"NDVI","relative error",sep = " ");
+        plot.NDVI.rel.err <- initializePlot(
+            title    = NULL,
+            subtitle = temp.title
+            );
+        plot.NDVI.rel.err <- plot.NDVI.rel.err + geom_density(
+            data    = DF.temp,
+            mapping = aes(x = NDVI.rel.err.codr.230m),
+            alpha   = 0.5,
+            size    = 0.5
+            );
+
+        my.cowplot <- cowplot::plot_grid(
+            plot.greenness.err,
+            plot.greenness.rel.err,
+            plot.NDVI.err,
+            plot.NDVI.rel.err,
+            byrow       = TRUE,
+            nrow        = 2,
+            ncol        = 2,
+            # align     = "v",
+            rel_heights = c(1,1,1,1),
+            rel_widths  = c(1,1,1,1)
+            );
+
+        PNG.output  <- paste0("plot-density-codr-230m-",temp.year,".png");
+        cowplot::ggsave2(
+            file   = file.path(temp.directory,PNG.output),
+            plot   = my.cowplot,
+            dpi    = 300,
+            height =  12,
+            width  =  24,
+            units  = 'in'
+            );
+
+        } # for ( temp.year in years )
+
+    return( NULL );
+
+    }
+
 summarize.visualize.errors_scatter.errors <- function(
     DF.errors     = NULL,
     textsize.axis = 20
