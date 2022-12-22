@@ -26,6 +26,11 @@ summarize.visualize.errors_five.stats <- function(
     textsize.axis = 20
     ) {
 
+    temp.directory <- "plots-year-err";
+    if ( !dir.exists(temp.directory) ) {
+        dir.create(temp.directory);
+        }
+
     err.colnames <- grep(
         x      = colnames(DF.errors),
         patter = "\\.err\\.",
@@ -38,7 +43,7 @@ summarize.visualize.errors_five.stats <- function(
         DF.five.stats <- as.data.frame(aggregate(
             data = DF.errors[,c('year',temp.err)],
             x    = as.formula(paste0(temp.err," ~ year")),
-            FUN  = function(x) {quantile(x = x, prob = c(0,0.05,0.5,0.95,1))}
+            FUN  = function(x) {quantile(x = x, prob = c(0,0.025,0.05,0.50,0.95,0.975,1))}
             ));
         colnames(DF.five.stats) <- gsub(
             x           = colnames(DF.five.stats),
@@ -74,16 +79,24 @@ summarize.visualize.errors_five.stats <- function(
         my.ggplot <- my.ggplot + geom_ribbon(
             data    = DF.five.stats,
             mapping = aes(x = year, ymin = percentile.0, ymax = percentile.100),
-            alpha   = 0.50,
+            alpha   = 0.30,
             fill    = "gray",
             colour  = NA
             );
 
         my.ggplot <- my.ggplot + geom_ribbon(
             data    = DF.five.stats,
+            mapping = aes(x = year, ymin = percentile.2.5, ymax = percentile.97.5),
+            alpha   = 0.80,
+            fill    = "yellow",
+            colour  = NA
+            );
+
+        my.ggplot <- my.ggplot + geom_ribbon(
+            data    = DF.five.stats,
             mapping = aes(x = year, ymin = percentile.5, ymax = percentile.95),
-            alpha   = 0.75,
-            fill    = "gray",
+            alpha   = 0.30,
+            fill    = "red",
             colour  = NA
             );
 
@@ -93,8 +106,8 @@ summarize.visualize.errors_five.stats <- function(
             colour  = "black"
             );
 
-        my.ggplot <- my.ggplot + scale_x_continuous(breaks = seq(2000,2022,4));
-        my.ggplot <- my.ggplot + scale_y_continuous(limits = seq(-0.12,0.12,0.04));
+        my.ggplot <- my.ggplot + scale_x_continuous(breaks = seq(2000,2022,2));
+        # my.ggplot <- my.ggplot + scale_y_continuous(limits = seq(-0.12,0.12,0.04));
 
         my.ggplot <- my.ggplot + theme(
             axis.text.x = element_text(size = textsize.axis, face = "bold", angle = 90, vjust = 0.5)
@@ -103,7 +116,7 @@ summarize.visualize.errors_five.stats <- function(
         temp.stem  <- gsub(x = temp.err, pattern = "\\.", replacement = "-");
         PNG.output <- paste0("plot-year-err-",temp.stem,".png");
         ggsave(
-            file   = PNG.output,
+            file   = file.path(temp.directory,PNG.output),
             plot   = my.ggplot,
             dpi    = 300,
             height =   5,
