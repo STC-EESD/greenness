@@ -9,7 +9,12 @@ summarize.visualize.errors <- function(
     cat(paste0("\n# ",thisFunctionName,"() starts.\n"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    summarize.visualize.errors_five.stats(
+    # summarize.visualize.errors_five.stats(
+    #     DF.errors = DF.errors
+    #     );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    summarize.visualize.errors_scatter.errors(
         DF.errors = DF.errors
         );
 
@@ -21,12 +26,113 @@ summarize.visualize.errors <- function(
     }
 
 ##################################################
+summarize.visualize.errors_scatter.errors <- function(
+    DF.errors     = NULL,
+    textsize.axis = 20
+    ) {
+
+    temp.directory <- "plots-scatter-errors";
+    if ( !dir.exists(temp.directory) ) {
+        dir.create(temp.directory);
+        }
+
+    years <- unique(DF.errors[,'year']);
+    for ( temp.year in years ) {
+
+        DF.temp <- DF.errors[DF.errors[,'year'] == temp.year,];
+
+        temp.title <- paste(temp.year,"Greenness",sep = " ");
+        plot.greenness <- initializePlot(
+            title    = NULL,
+            subtitle = temp.title
+            );
+
+        plot.greenness <- plot.greenness + geom_abline(
+            slope     = 1,
+            intercept = 0,
+            colour    = "gray"
+            );
+
+        plot.greenness <- plot.greenness + geom_point(
+            data    = DF.temp[DF.temp[,'is.aggregate'],],
+            mapping = aes(x = greenness.value.codr, y = greenness.value.230m),
+            colour  = "red",
+            size    = 3.00,
+            alpha   = 0.25
+            );
+
+        plot.greenness <- plot.greenness + geom_point(
+            data    = DF.temp,
+            mapping = aes(x = greenness.value.codr, y = greenness.value.230m),
+            colour  = "black",
+            size    = 0.50,
+            alpha   = 0.50
+            );
+
+        plot.greenness <- plot.greenness + xlab("CODR");
+        plot.greenness <- plot.greenness + ylab("Albers, 230m");
+
+        temp.title <- paste(temp.year,"NDVI",sep = " ");
+        plot.NDVI <- initializePlot(
+            title    = NULL,
+            subtitle = temp.title
+            );
+
+        plot.NDVI <- plot.NDVI + geom_abline(
+            slope     = 1,
+            intercept = 0,
+            colour    = "gray"
+            );
+
+        plot.NDVI <- plot.NDVI + geom_point(
+            data    = DF.temp[DF.temp[,'is.aggregate'],],
+            mapping = aes(x = NDVI.value.codr, y = NDVI.value.230m),
+            colour  = "red",
+            size    = 3.00,
+            alpha   = 0.25
+            );
+
+        plot.NDVI <- plot.NDVI + geom_point(
+            data    = DF.temp,
+            mapping = aes(x = NDVI.value.codr, y = NDVI.value.230m),
+            colour  = "black",
+            size    = 0.50,
+            alpha   = 0.50
+            );
+
+        plot.NDVI <- plot.NDVI + xlab("CODR");
+        plot.NDVI <- plot.NDVI + ylab("Albers, 230m");
+
+        my.cowplot <- cowplot::plot_grid(
+            plot.greenness,
+            plot.NDVI,
+            nrow        = 1,
+            # align     = "v",
+            rel_heights = c(1,1)
+            );
+
+        PNG.output  <- paste0("plot-scatter-codr-230m-",temp.year,".png");
+        cowplot::ggsave2(
+            file   = file.path(temp.directory,PNG.output),
+            plot   = my.cowplot,
+            dpi    = 300,
+            height =  12,
+            width  =  24,
+            units  = 'in'
+            );
+
+        } # for ( temp.year in years )
+
+    return( NULL );
+
+    }
+
 summarize.visualize.errors_five.stats <- function(
     DF.errors     = NULL,
     textsize.axis = 20
     ) {
 
-    temp.directory <- "plots-year-err";
+    temp.directory <- "plots-year-error";
     if ( !dir.exists(temp.directory) ) {
         dir.create(temp.directory);
         }
