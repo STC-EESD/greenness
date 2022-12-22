@@ -1,6 +1,8 @@
 
 summarize.visualize.errors <- function(
-    DF.errors = NULL
+    DF.errors    = NULL,
+    SF.centroids = NULL,
+    SF.provinces = NULL
     ) {
 
     thisFunctionName <- "summarize.visualize.errors";
@@ -25,6 +27,12 @@ summarize.visualize.errors <- function(
         DF.errors = DF.errors
         )
 
+    summarize.visualize.errors_error.map(
+        DF.errors    = DF.errors,
+        SF.centroids = SF.centroids,
+        SF.provinces = SF.provinces
+        )
+
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n# ",thisFunctionName,"() exits."));
     cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###\n");
@@ -33,6 +41,66 @@ summarize.visualize.errors <- function(
     }
 
 ##################################################
+summarize.visualize.errors_error.map <- function(
+    DF.errors    = NULL,
+    SF.centroids = NULL,
+    SF.provinces = NULL
+    ) {
+
+    temp.directory <- "plots-error-map";
+    if ( !dir.exists(temp.directory) ) {
+        dir.create(temp.directory);
+        }
+
+    err.colnames <- grep(x = colnames(DF.errors), pattern = "\\.err\\.", value = TRUE);
+
+    years <- unique(DF.errors[,'year']);
+    for ( temp.year in years ) {
+    for ( err.colname in err.colnames ) {
+
+        SF.year <- dplyr::left_join(
+            x  = SF.centroids,
+            y  = DF.errors[DF.errors[,'year'] == temp.year,c('DGUID',err.colnames)],
+            by = "DGUID"
+            );
+
+        cat("\nstr(SF.year)\n");
+        print( str(SF.year)   );
+        cat("\nsummary(SF.year)\n");
+        print( summary(SF.year)   );
+
+        my.tmap <- tmap::tm_shape(SF.provinces) + tmap::tm_borders();
+        my.tmap <- my.tmap + tmap::tm_shape(SF.year) + tmap::tm_dots( # tmap::tm_bubbles(
+            size  = err.colname, # "NDVI.err.codr.230m", # "area",
+            col   = "orange",
+            alpha = 0.5
+            );
+        my.tmap <- my.tmap + tmap::tm_layout(
+            legend.position   = c("right","bottom"),
+            legend.title.size = 1.0,
+            legend.text.size  = 0.8
+            );
+
+        # cat("\nstr(my.tmap)\n");
+        # print( str(my.tmap)   );
+
+        temp.stem  <- gsub(x = err.colname, pattern = "\\.", replacement = "-");
+        PNG.output <- paste0("plot-error-map-",temp.year,"-",temp.stem,".png");
+        tmap::tmap_save(
+            tm       = my.tmap,
+            filename = file.path(temp.directory,PNG.output),
+            width    = 16,
+            # height =  8,
+            units    = "in",
+            dpi      = 300
+            );
+
+        }}
+
+    return( NULL );
+
+    }
+
 summarize.visualize.errors_error.vs.area <- function(
     DF.errors     = NULL,
     textsize.axis = 20

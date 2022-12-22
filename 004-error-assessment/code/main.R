@@ -73,41 +73,6 @@ colname.DGNAME <- 'NAME_ENG';
 # colname.name <- 'NAME_FRA';
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# DF.No.DGUIDs <- base::as.data.frame(readxl::read_excel(
-#     path  = file.path(data.directory,data.snapshot,release,"Dim1_DGUID_Relationship.xlsx"),
-#     sheet = "No_DGUIDs"
-#     ));
-# No.DGUIDs <- unique(DF.No.DGUIDs[,'DGUID']);
-# print( str(DF.No.DGUIDs) );
-# print( No.DGUIDs );
-
-### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# DF.Albers.230m <- getData.Albers(
-#     data.directory       = data.directory,
-#     data.snapshot        = data.snapshot,
-#     release              = release,
-#     CSV.Albers.greenness = "MODISCOMP7d_2000_2022_Albers_Greenness_230m_v2_All.csv",
-#     CSV.Albers.NDVI      = "MODISCOMP7d_2000_2022_Albers_AverageNDVI_230m_v2_All.csv",
-#     colname.suffix       = "230m"
-#     );
-#
-# cat("\nstr(DF.Albers.230m)\n");
-# print( str(DF.Albers.230m)   );
-#
-### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# DF.Albers.10m <- getData.Albers(
-#     data.directory       = data.directory,
-#     data.snapshot        = data.snapshot,
-#     release              = release,
-#     CSV.Albers.greenness = "MODISCOMP7d_2000_2022_Albers_Greenness_10m_v2_PC.csv",
-#     CSV.Albers.NDVI      = "MODISCOMP7d_2000_2022_Albers_AverageNDVI_10m_v2_PC.csv",
-#     colname.suffix       = "230m"
-#     );
-#
-# cat("\nstr(DF.Albers.10m)\n");
-# print( str(DF.Albers.10m)   );
-
-### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 DF.errors <- getData.errors(
     data.directory = data.directory,
     data.snapshot  = data.snapshot,
@@ -126,8 +91,37 @@ cat("\nstr(DF.errors)\n");
 print( str(DF.errors)   );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+data.snapshot.boundaries <- "2022-12-19.01";
+SF.boundaries <- sf::st_read(
+    dsn = file.path(data.directory,data.snapshot.boundaries,"lpc_000b21a_e","lpc_000b21a_e.shp")
+    );
+SF.boundaries[,'area'] <- as.numeric(sf::st_area(sf::st_geometry(SF.boundaries))) / 1e6;
+cat("\nstr(SF.boundaries)\n");
+print( str(SF.boundaries)   );
+# cat("\nsummary(SF.boundaries)\n");
+# print( summary(SF.boundaries)   );
+
+SF.centroids <- SF.boundaries;
+sf::st_geometry(SF.centroids) <- sf::st_centroid(sf::st_geometry(SF.boundaries));
+cat("\nstr(SF.centroids)\n");
+print( str(SF.centroids)   );
+# cat("\nsummary(SF.centroids)\n");
+# print( summary(SF.centroids)   );
+
+SF.canada <- sf::st_read(
+    dsn = file.path(data.directory,data.snapshot.boundaries,"lpr_000a21a_e","lpr_000a21a_e.shp")
+    );
+SF.provinces <- SF.canada;
+SF.provinces$PRUID <- as.integer(SF.provinces$PRUID);
+SF.provinces <- SF.provinces[SF.provinces$PRUID < 60,]
+cat("\nstr(SF.provinces)\n");
+print( str(SF.provinces)   );
+
+### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 summarize.visualize.errors(
-    DF.errors = DF.errors
+    DF.errors    = DF.errors,
+    SF.centroids = SF.centroids,
+    SF.provinces = SF.provinces
     );
 
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
@@ -185,10 +179,9 @@ summarize.visualize.errors(
 # setdiff(No.DGUIDs,temp.DGUIDs);
 #
 ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-# data.snapshot <- "2022-12-19.01";
-#
+# data.snapshot.boundaries <- "2022-12-19.01";
 # SF.boundaries <- sf::st_read(
-#     dsn = file.path(data.directory,data.snapshot,"lpc_000b21a_e","lpc_000b21a_e.shp")
+#     dsn = file.path(data.directory,data.snapshot.boundaries,"lpc_000b21a_e","lpc_000b21a_e.shp")
 #     );
 # SF.boundaries[,'area'] <- as.numeric(sf::st_area(sf::st_geometry(SF.boundaries))) / 1e6;
 # cat("\nstr(SF.boundaries)\n");
@@ -198,28 +191,35 @@ summarize.visualize.errors(
 #
 # SF.centroids <- SF.boundaries;
 # sf::st_geometry(SF.centroids) <- sf::st_centroid(sf::st_geometry(SF.boundaries));
+#
+# err.colnames <- grep(x = colnames(DF.errors), pattern = "\\.err\\.", value = TRUE);
+# SF.centroids <- dplyr::left_join(
+#     x  = SF.centroids,
+#     y  = DF.errors[DF.errors[,'year'] == 2021,c('DGUID',err.colnames)],
+#     by = "DGUID"
+#     );
+#
 # cat("\nstr(SF.centroids)\n");
 # print( str(SF.centroids)   );
 # cat("\nsummary(SF.centroids)\n");
 # print( summary(SF.centroids)   );
 #
-# ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 # SHP.canada <- sf::st_read(
-#     dsn = file.path(data.directory,data.snapshot,"lpr_000a21a_e","lpr_000a21a_e.shp")
+#     dsn = file.path(data.directory,data.snapshot.boundaries,"lpr_000a21a_e","lpr_000a21a_e.shp")
 #     );
 # cat("\nstr(SHP.canada)\n");
 # print( str(SHP.canada)   );
 #
-# ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
 # my.tmap <- tmap::tm_shape(SHP.canada) + tmap::tm_borders();
 # my.tmap <- my.tmap + tmap::tm_shape(SF.centroids) + tmap::tm_dots(
-#     size  = "area",
+#     size  = "NDVI.err.codr.230m", # "area",
 #     col   = "orange",
 #     alpha = 0.5
 #     );
+# my.tmap <- my.tmap + tmap::tm_layout(legend.position = c("right","bottom"));
 #
-# cat("\nstr(my.tmap)\n");
-# print( str(my.tmap)   );
+# # cat("\nstr(my.tmap)\n");
+# # print( str(my.tmap)   );
 #
 # tmap::tmap_save(
 #     tm       = my.tmap,
