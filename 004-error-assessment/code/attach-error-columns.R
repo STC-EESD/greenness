@@ -43,7 +43,7 @@ attach.error.columns <- function(
                 } else if ( sum(abs(x[c(1,2)])) < 1e-20 ) {
                     return( 0 );
                 } else {
-                    return( x[3] / mean(x[1],x[2]) );
+                    return( x[3] / mean(c(x[1],x[2])) );
                     }
                 }
             );
