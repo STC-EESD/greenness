@@ -9,10 +9,10 @@ summarize.visualize.errors <- function(
     cat(paste0("\n# ",thisFunctionName,"() starts.\n"));
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    # summarize.visualize.errors_five.stats(
-    #     DF.errors = DF.errors
-    #     );
-    #
+    summarize.visualize.errors_five.stats.ts(
+        DF.errors = DF.errors
+        );
+
     # summarize.visualize.errors_scatter.errors(
     #     DF.errors = DF.errors
     #     );
@@ -20,10 +20,10 @@ summarize.visualize.errors <- function(
     # summarize.visualize.errors_density(
     #     DF.errors = DF.errors
     #     );
-
-    summarize.visualize.errors_error.vs.area(
-        DF.errors = DF.errors
-        )
+    #
+    # summarize.visualize.errors_error.vs.area(
+    #     DF.errors = DF.errors
+    #     )
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n# ",thisFunctionName,"() exits."));
@@ -358,7 +358,183 @@ summarize.visualize.errors_scatter.errors <- function(
 
     }
 
-summarize.visualize.errors_five.stats <- function(
+summarize.visualize.errors_five.stats.single <- function(
+    DF.input      = NULL,
+    err.colname   = NULL,
+    ylimits       = NULL,
+    ybreaks       = NULL,
+    textsize.axis = 20
+    ) {
+
+    cat("\nerr.colname:",err.colname,"\n");
+    cat("\nstr(DF.input)\n");
+    print( str(DF.input)   );
+
+    DF.five.stats <- as.data.frame(aggregate(
+        data = DF.input[,c('year',err.colname)],
+        x    = as.formula(paste0(err.colname," ~ year")),
+        FUN  = function(x) {quantile(x = x, prob = c(0,0.025,0.05,0.50,0.95,0.975,1))}
+        ));
+    colnames(DF.five.stats) <- gsub(
+        x           = colnames(DF.five.stats),
+        pattern     = err.colname, #paste0(temp.err,"\\."),
+        replacement = ""
+        );
+    DF.five.stats <- cbind(DF.five.stats[1],DF.five.stats[,2]);
+    colnames(DF.five.stats) <- gsub(
+        x           = colnames(DF.five.stats),
+        pattern     = "%$",
+        replacement = ""
+        );
+    colnames(DF.five.stats) <- paste0("percentile.",colnames(DF.five.stats));
+    colnames(DF.five.stats) <- gsub(
+        x           = colnames(DF.five.stats),
+        pattern     = "percentile\\.year",
+        replacement = "year"
+        );
+
+    cat("\nerror variable:",err.colname);
+    cat("\nstr(DF.five.stats)\n");
+    print( str(DF.five.stats)   );
+    cat("\nDF.five.stats\n");
+    print( DF.five.stats   );
+    cat("\nDF.five.stats\n");
+
+    temp.title <- gsub(x = err.colname, pattern = "\\.", replacement = " ");
+    my.ggplot <- initializePlot(
+        title    = NULL,
+        subtitle = temp.title
+        );
+
+    my.ggplot <- my.ggplot + geom_ribbon(
+        data    = DF.five.stats,
+        mapping = aes(x = year, ymin = percentile.0, ymax = percentile.100),
+        alpha   = 0.30,
+        fill    = "gray",
+        colour  = NA
+        );
+
+    my.ggplot <- my.ggplot + geom_ribbon(
+        data    = DF.five.stats,
+        mapping = aes(x = year, ymin = percentile.2.5, ymax = percentile.97.5),
+        alpha   = 0.80,
+        fill    = "yellow",
+        colour  = NA
+        );
+
+    my.ggplot <- my.ggplot + geom_ribbon(
+        data    = DF.five.stats,
+        mapping = aes(x = year, ymin = percentile.5, ymax = percentile.95),
+        alpha   = 0.30,
+        fill    = "red",
+        colour  = NA
+        );
+
+    my.ggplot <- my.ggplot + geom_line(
+        data    = DF.five.stats,
+        mapping = aes(x = year, y = percentile.50),
+        colour  = "black"
+        );
+
+    my.ggplot <- my.ggplot + scale_x_continuous(breaks = seq(2000,2022,2));
+    if ( !is.null(ylimits) ) {
+        cat("\nylimits\n");
+        print( ylimits   );
+        my.ggplot <- my.ggplot + scale_y_continuous(
+            limits = ylimits,
+            breaks = ybreaks
+            );
+        print("A-1");
+        }
+
+    my.ggplot <- my.ggplot + theme(
+        axis.text.x = element_text(size = textsize.axis, face = "bold", angle = 90, vjust = 0.5)
+        );
+
+    # temp.stem  <- gsub(x = temp.err, pattern = "\\.", replacement = "-");
+    # PNG.output <- paste0("plot-year-err-",temp.stem,".png");
+    # ggsave(
+    #     file   = file.path(temp.directory,PNG.output),
+    #     plot   = my.ggplot,
+    #     dpi    = 300,
+    #     height =   5,
+    #     width  =  24,
+    #     units  = 'in'
+    #     );
+
+    return( my.ggplot );
+
+    }
+
+summarize.visualize.errors_five.stats.ts <- function(
+    DF.errors     = NULL,
+    textsize.axis = 20
+    ) {
+
+    temp.directory <- "plots-five-stats-ts";
+    if ( !dir.exists(temp.directory) ) {
+        dir.create(temp.directory);
+        }
+
+    DF.version.pairs <- t(combn(c('codr','230m','10m'),2));
+
+    for ( temp.variable in c('greenness','NDVI') ) {
+    for ( row.index in seq(1,nrow(DF.version.pairs)) ) {
+
+        version.1 <- DF.version.pairs[row.index,1];
+        version.2 <- DF.version.pairs[row.index,2];
+
+        temp.err     <- paste(temp.variable,"err",    version.1,version.2,sep=".");
+        temp.rel.err <- paste(temp.variable,"rel.err",version.1,version.2,sep=".");
+
+        plot.err <- summarize.visualize.errors_five.stats.single(
+            DF.input    = DF.errors,
+            err.colname = temp.err
+            );
+        plot.err <- plot.err + theme(
+            axis.title.x = element_blank(),
+            axis.text.x  = element_blank()
+            );
+
+        if ( temp.variable == "greenness" ) {
+            plot.rel.err <- summarize.visualize.errors_five.stats.single(
+                DF.input    = DF.errors,
+                err.colname = temp.rel.err,
+                ylimits     = c(-0.2,0.2),
+                ybreaks     = seq(-0.2,0.2,0.1)
+                );
+        } else {
+            plot.rel.err <- summarize.visualize.errors_five.stats.single(
+                DF.input    = DF.errors,
+                err.colname = temp.rel.err
+                );
+            }
+
+        my.cowplot <- cowplot::plot_grid(
+            plot.err,
+            plot.rel.err,
+            ncol        = 1,
+            align       = "v",
+            rel_heights = c(1,1)
+            );
+
+        PNG.output  <- paste0("plot-year-err-",version.1,"-",version.2,"-",temp.variable,".png");
+        cowplot::ggsave2(
+            file   = file.path(temp.directory,PNG.output),
+            plot   = my.cowplot,
+            dpi    = 300,
+            height =  12,
+            width  =  24,
+            units  = 'in'
+            );
+
+        }} # for ( temp.variable in c('greenness','NDVI') ), for ( row.index in seq(1,nrow(DF.version.pairs)) )
+
+    return( NULL );
+
+    }
+
+summarize.visualize.errors_five.stats_BACKUP <- function(
     DF.errors     = NULL,
     textsize.axis = 20
     ) {
