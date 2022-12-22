@@ -16,10 +16,14 @@ summarize.visualize.errors <- function(
     # summarize.visualize.errors_scatter.errors(
     #     DF.errors = DF.errors
     #     );
+    #
+    # summarize.visualize.errors_density(
+    #     DF.errors = DF.errors
+    #     );
 
-    summarize.visualize.errors_density(
+    summarize.visualize.errors_error.vs.area(
         DF.errors = DF.errors
-        );
+        )
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n# ",thisFunctionName,"() exits."));
@@ -29,6 +33,138 @@ summarize.visualize.errors <- function(
     }
 
 ##################################################
+summarize.visualize.errors_error.vs.area <- function(
+    DF.errors     = NULL,
+    textsize.axis = 20
+    ) {
+
+    temp.directory <- "plots-error-vs-area";
+    if ( !dir.exists(temp.directory) ) {
+        dir.create(temp.directory);
+        }
+
+    years <- unique(DF.errors[,'year']);
+    for ( temp.year in years ) {
+
+        DF.temp <- DF.errors[DF.errors[,'year'] == temp.year,];
+
+        temp.title <- paste(temp.year,"Greenness","error",sep = " ");
+        plot.greenness.err <- initializePlot(
+            title    = NULL,
+            subtitle = temp.title
+            );
+        plot.greenness.err <- plot.greenness.err + geom_point(
+            data    = DF.temp[DF.temp[,'is.aggregate'],],
+            mapping = aes(x = log10(area.230m / 1e6), y = greenness.err.codr.230m),
+            colour  = "red",
+            size    = 3.00,
+            alpha   = 0.25
+            );
+        plot.greenness.err <- plot.greenness.err + geom_point(
+            data    = DF.temp,
+            mapping = aes(x = log10(area.230m / 1e6), y = greenness.err.codr.230m),
+            alpha   = 0.5,
+            size    = 0.5
+            );
+
+        plot.greenness.err <- plot.greenness.err + xlab("log10(area)");
+        plot.greenness.err <- plot.greenness.err + ylab("error (Albers/230m vs CODR)");
+
+        temp.title <- paste(temp.year,"Greenness","relative error",sep = " ");
+        plot.greenness.rel.err <- initializePlot(
+            title    = NULL,
+            subtitle = temp.title
+            );
+        plot.greenness.rel.err <- plot.greenness.rel.err + geom_point(
+            data    = DF.temp[DF.temp[,'is.aggregate'],],
+            mapping = aes(x = log10(area.230m / 1e6), y = greenness.rel.err.codr.230m),
+            colour  = "red",
+            size    = 3.00,
+            alpha   = 0.25
+            );
+        plot.greenness.rel.err <- plot.greenness.rel.err + geom_point(
+            data    = DF.temp,
+            mapping = aes(x = log10(area.230m / 1e6), y = greenness.rel.err.codr.230m),
+            alpha   = 0.5,
+            size    = 0.5
+            );
+
+        plot.greenness.rel.err <- plot.greenness.rel.err + xlab("log10(area)");
+        plot.greenness.rel.err <- plot.greenness.rel.err + ylab("error (Albers/230m vs CODR)");
+
+        temp.title <- paste(temp.year,"NDVI","error",sep = " ");
+        plot.NDVI.err <- initializePlot(
+            title    = NULL,
+            subtitle = temp.title
+            );
+        plot.NDVI.err <- plot.NDVI.err + geom_point(
+            data    = DF.temp[DF.temp[,'is.aggregate'],],
+            mapping = aes(x = log10(area.230m / 1e6), y = NDVI.err.codr.230m),
+            colour  = "red",
+            size    = 3.00,
+            alpha   = 0.25
+            );
+        plot.NDVI.err <- plot.NDVI.err + geom_point(
+            data    = DF.temp,
+            mapping = aes(x = log10(area.230m / 1e6), y = NDVI.err.codr.230m),
+            alpha   = 0.5,
+            size    = 0.5
+            );
+
+        plot.NDVI.err <- plot.NDVI.err + xlab("log10(area)");
+        plot.NDVI.err <- plot.NDVI.err + ylab("error (Albers/230m vs CODR)");
+
+        temp.title <- paste(temp.year,"NDVI","relative error",sep = " ");
+        plot.NDVI.rel.err <- initializePlot(
+            title    = NULL,
+            subtitle = temp.title
+            );
+        plot.NDVI.rel.err <- plot.NDVI.rel.err + geom_point(
+            data    = DF.temp[DF.temp[,'is.aggregate'],],
+            mapping = aes(x = log10(area.230m / 1e6), y = NDVI.rel.err.codr.230m),
+            colour  = "red",
+            size    = 3.00,
+            alpha   = 0.25
+            );
+        plot.NDVI.rel.err <- plot.NDVI.rel.err + geom_point(
+            data    = DF.temp,
+            mapping = aes(x = log10(area.230m / 1e6), y = NDVI.rel.err.codr.230m),
+            alpha   = 0.5,
+            size    = 0.5
+            );
+
+        plot.NDVI.rel.err <- plot.NDVI.rel.err + xlab("log10(area)");
+        plot.NDVI.rel.err <- plot.NDVI.rel.err + ylab("error (Albers/230m vs CODR)");
+
+        my.cowplot <- cowplot::plot_grid(
+            plot.greenness.err,
+            plot.greenness.rel.err,
+            plot.NDVI.err,
+            plot.NDVI.rel.err,
+            byrow       = TRUE,
+            nrow        = 2,
+            ncol        = 2,
+            # align     = "v",
+            rel_heights = c(1,1,1,1),
+            rel_widths  = c(1,1,1,1)
+            );
+
+        PNG.output  <- paste0("plot-error-vs-area-codr-230m-",temp.year,".png");
+        cowplot::ggsave2(
+            file   = file.path(temp.directory,PNG.output),
+            plot   = my.cowplot,
+            dpi    = 300,
+            height =  12,
+            width  =  24,
+            units  = 'in'
+            );
+
+        } # for ( temp.year in years )
+
+    return( NULL );
+
+    }
+
 summarize.visualize.errors_density <- function(
     DF.errors     = NULL,
     textsize.axis = 20
