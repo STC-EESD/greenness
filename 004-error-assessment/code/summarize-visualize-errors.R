@@ -13,17 +13,17 @@ summarize.visualize.errors <- function(
         DF.errors = DF.errors
         );
 
-    # summarize.visualize.errors_scatter.errors(
-    #     DF.errors = DF.errors
-    #     );
-    #
-    # summarize.visualize.errors_density(
-    #     DF.errors = DF.errors
-    #     );
-    #
-    # summarize.visualize.errors_error.vs.area(
-    #     DF.errors = DF.errors
-    #     )
+    summarize.visualize.errors_scatter.errors(
+        DF.errors = DF.errors
+        );
+
+    summarize.visualize.errors_density(
+        DF.errors = DF.errors
+        );
+
+    summarize.visualize.errors_error.vs.area(
+        DF.errors = DF.errors
+        )
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n# ",thisFunctionName,"() exits."));
