@@ -1,11 +1,12 @@
 
-getData <- function(
+getData.errors <- function(
     data.directory = NULL,
     data.snapshot  = NULL,
     release        = NULL,
     CSV.codr       = NULL,
     colname.DGNAME = NULL,
     sep.codr       = NULL,
+    CSV.output     = "DF-errors.csv",
 
     CSV.Albers.greenness.10m = NULL,
     CSV.Albers.NDVI.10m      = NULL,
@@ -16,10 +17,17 @@ getData <- function(
     colname.suffix.230m       = "230m"
     ) {
 
-    thisFunctionName <- "getData";
+    thisFunctionName <- "getData.errors";
 
     cat("\n### ~~~~~~~~~~~~~~~~~~~~ ###");
     cat(paste0("\n# ",thisFunctionName,"() starts.\n"));
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    if ( file.exists(CSV.output) ) {
+        cat("\nThe output file",CSV.output,"already exists; loading the file ...\n");
+        DF.output <- read.csv(CSV.output);
+        return( DF.output );
+        }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.DGUID.dim1 <- getData.DGUID.dim1(
@@ -28,8 +36,8 @@ getData <- function(
         release        = release
         );
 
-    cat("\nstr(DF.DGUID.dim1)\n");
-    print( str(DF.DGUID.dim1)   );
+    # cat("\nstr(DF.DGUID.dim1)\n");
+    # print( str(DF.DGUID.dim1)   );
 
     colnames(DF.DGUID.dim1) <- gsub(
         x           = colnames(DF.DGUID.dim1),
@@ -49,8 +57,8 @@ getData <- function(
         DF.DGUID.dim1  = DF.DGUID.dim1
         );
 
-    cat("\nstr(DF.codr)\n");
-    print( str(DF.codr)   );
+    # cat("\nstr(DF.codr)\n");
+    # print( str(DF.codr)   );
 
     # is.selected <- (DF.codr[,'DGUID'] %in% c('2021S05101277','2021S05101438'));
     # cat("\nDF.codr[is.selected,]\n");
@@ -72,8 +80,8 @@ getData <- function(
 
     DF.grid[,'DGUID'] <- as.character(DF.grid[,'DGUID']);
 
-    cat("\nstr(DF.grid)\n");
-    print( str(DF.grid)   );
+    # cat("\nstr(DF.grid)\n");
+    # print( str(DF.grid)   );
 
     # cat("\nDF.grid[1:50,]\n");
     # print( DF.grid[1:50,]   );
@@ -95,11 +103,11 @@ getData <- function(
 
     DF.output <- DF.output[,reordered.colnames];
 
-    cat("\nstr(DF.output) - A\n");
-    print( str(DF.output) );
-
-    cat("\nDF.output[1:50,]\n");
-    print( DF.output[1:50,]   );
+    # cat("\nstr(DF.output) - A\n");
+    # print( str(DF.output) );
+    #
+    # cat("\nDF.output[1:50,]\n");
+    # print( DF.output[1:50,]   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     DF.output <- merge(
@@ -110,11 +118,11 @@ getData <- function(
         );
     DF.output <- DF.output[order(DF.output$year,DF.output$dim1),];
 
-    cat("\nstr(DF.output) - B\n");
-    print( str(DF.output) );
-
-    cat("\nDF.output[1:50,]\n");
-    print( DF.output[1:50,]   );
+    # cat("\nstr(DF.output) - B\n");
+    # print( str(DF.output) );
+    #
+    # cat("\nDF.output[1:50,]\n");
+    # print( DF.output[1:50,]   );
 
     # is.selected <- (DF.output[,'DGUID'] %in% c('2021S05101277','2021S05101438'));
     # cat("\nDF.output[is.selected,]\n");
@@ -142,11 +150,11 @@ getData <- function(
         colname.suffix       = colname.suffix.230m
         );
 
-    cat("\nstr(DF.Albers.230m)\n");
-    print( str(DF.Albers.230m)   );
+    # cat("\nstr(DF.Albers.230m)\n");
+    # print( str(DF.Albers.230m)   );
 
-    cat("\nduplicated(DF.Albers.230m[,c('year','DGUID')])\n");
-    print( duplicated(DF.Albers.230m[,c('year','DGUID')])   );
+    # cat("\nduplicated(DF.Albers.230m[,c('year','DGUID')])\n");
+    # print( duplicated(DF.Albers.230m[,c('year','DGUID')])   );
 
     DF.Albers.10m <- getData.Albers(
         data.directory       = data.directory,
@@ -157,11 +165,11 @@ getData <- function(
         colname.suffix       = colname.suffix.10m
         );
 
-    cat("\nstr(DF.output) - B\n");
-    print( str(DF.output)   );
-
-    cat("\nstr(DF.Albers.10m)\n");
-    print( str(DF.Albers.10m)   );
+    # cat("\nstr(DF.output) - B\n");
+    # print( str(DF.output)   );
+    #
+    # cat("\nstr(DF.Albers.10m)\n");
+    # print( str(DF.Albers.10m)   );
 
     # cat("\nduplicated(DF.Albers.10m[,c('year','DGUID')])\n");
     # print( duplicated(DF.Albers.10m[,c('year','DGUID')])   );
@@ -174,8 +182,8 @@ getData <- function(
         all.x = TRUE
         );
 
-    cat("\nstr(DF.output) - C\n");
-    print( str(DF.output) );
+    # cat("\nstr(DF.output) - C\n");
+    # print( str(DF.output) );
 
     DF.output <- merge(
         x     = DF.output,
@@ -185,8 +193,8 @@ getData <- function(
         );
     DF.output <- DF.output[order(DF.output$year,DF.output$dim1),];
 
-    cat("\nstr(DF.output) - D\n");
-    print( str(DF.output) );
+    # cat("\nstr(DF.output) - D\n");
+    # print( str(DF.output) );
 
     DF.output[,'is.aggregate'] <- grepl(
         x       = DF.output[,'DGUID'],
@@ -225,8 +233,25 @@ getData <- function(
         }
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
-    cat("\nstr(DF.output)\n");
-    print( str(DF.output)   );
+    DF.output <- attach.error.columns(
+        DF.input  = DF.output,
+        variables = c('greenness','NDVI'),
+        versions  = c('codr','230m','10m')
+        );
+
+    # cat("\nstr(DF.output)\n");
+    # print( str(DF.output)   );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    write.csv(
+        file      = CSV.output,
+        x         = DF.output,
+        row.names = FALSE
+        );
+
+    ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
+    # cat("\nstr(DF.output)\n");
+    # print( str(DF.output)   );
 
     ### ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ###
     cat(paste0("\n# ",thisFunctionName,"() exits."));
